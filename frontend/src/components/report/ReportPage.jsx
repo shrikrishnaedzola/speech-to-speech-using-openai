@@ -22,9 +22,11 @@ export default function ReportPage({ callId }) {
   const [report, setReport] = useState(null)
   const [error, setError] = useState(null)
   const [busy, setBusy] = useState(null) // 'regenerate' | 'ratings' | 'ai' | null
+  const [pdfExport, setPdfExport] = useState(true) // false on deployments without Chromium (Vercel)
 
   useEffect(() => {
     api.getReport(callId).then(setReport).catch((e) => setError(e.message))
+    api.config().then((cfg) => setPdfExport(cfg.features?.pdf_export !== false)).catch(() => {})
   }, [callId])
 
   useEffect(() => {
@@ -77,7 +79,7 @@ export default function ReportPage({ callId }) {
         )}
 
         <div className="mt-3 flex flex-wrap gap-2">
-          {['pdf', 'md', 'json'].map((f) => (
+          {(pdfExport ? ['pdf', 'md', 'json'] : ['md', 'json']).map((f) => (
             <a key={f} href={api.reportExportUrl(callId, f)}
               className="rounded border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">
               Download {f === 'md' ? 'Markdown' : f.toUpperCase()}
@@ -92,6 +94,11 @@ export default function ReportPage({ callId }) {
             {busy === 'regenerate' ? 'Regenerating…' : 'Regenerate report'}
           </button>
         </div>
+        {!pdfExport && (
+          <p className="mt-2 text-xs text-slate-500">
+            PDF is not available on this deployment. Download Markdown, or use the browser's Print → Save as PDF.
+          </p>
+        )}
         {error && <p className="mt-2 text-sm text-red-700">{error}</p>}
 
         <nav className="mt-4 flex flex-wrap gap-1 text-xs">

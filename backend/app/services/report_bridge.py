@@ -12,6 +12,7 @@ from report_module.api import make_report_router
 from report_module.call_data import CallData, Ratings
 from sqlalchemy import select
 
+from ..config import settings
 from ..db import SessionLocal
 from ..models import Call, CallRatings, CallReport, TurnMetric
 from .call_state import build_call_report
@@ -65,6 +66,7 @@ router = make_report_router(
     save_report=save_report,
     load_report=load_report,
     save_ratings=save_ratings,
+    pdf_enabled=settings.pdf_export,  # off on Vercel (Chromium does not fit)
 )
 
 

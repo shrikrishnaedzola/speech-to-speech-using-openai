@@ -1,0 +1,6 @@
+# Local development: runtime deps + tests + the shared report module (with PDF export).
+#   pip install -r requirements-dev.txt
+#   playwright install chromium
+-r requirements.txt
+pytest==8.3.4
+-e ../report_module[pdf,test]

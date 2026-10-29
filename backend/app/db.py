@@ -16,13 +16,29 @@ def _resolve_url(url: str) -> str:
     return url
 
 
+def _engine_options(url: str) -> dict:
+    if url.startswith("sqlite"):
+        return {
+            "connect_args": {"check_same_thread": False},  # needed for SQLite + FastAPI
+            # In-memory SQLite (tests): share ONE connection, otherwise each session gets an empty DB.
+            "poolclass": StaticPool if url == "sqlite://" else None,
+        }
+    # MySQL (deployed). pre_ping + recycle: serverless instances sit idle, and
+    # MySQL closes idle connections, so check/refresh them before use.
+    options = {"pool_pre_ping": True, "pool_recycle": 280, "pool_size": 2, "max_overflow": 3}
+    if settings.database_ssl:
+        import certifi  # installed with httpx
+
+        options["connect_args"] = {"ssl": {"ca": certifi.where()}}
+    return options
+
+
+if settings.on_vercel and settings.database_url.startswith("sqlite"):
+    # Vercel's disk is read-only and wiped between requests: SQLite would lose everything.
+    raise RuntimeError("Set DATABASE_URL to your MySQL database in the Vercel project settings.")
+
 _url = _resolve_url(settings.database_url)
-engine = create_engine(
-    _url,
-    connect_args={"check_same_thread": False},  # needed for SQLite + FastAPI
-    # In-memory SQLite (tests): share ONE connection, otherwise each session gets an empty DB.
-    poolclass=StaticPool if _url == "sqlite://" else None,
-)
+engine = create_engine(_url, **_engine_options(_url))
 SessionLocal = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
 
 
@@ -56,4 +72,19 @@ def add_missing_columns() -> None:
             for column in table.columns:
                 if column.name not in existing and column.nullable:
                     col_type = column.type.compile(engine.dialect)
-                    conn.execute(text(f'ALTER TABLE {table.name} ADD COLUMN "{column.name}" {col_type}'))
+                    quote = engine.dialect.identifier_preparer.quote  # "x" on SQLite, `x` on MySQL
+                    conn.execute(text(f"ALTER TABLE {quote(table.name)} ADD COLUMN {quote(column.name)} {col_type}"))
+
+
+def check_mysql_charset() -> str | None:
+    """Warn if the MySQL database is not utf8mb4 (Hindi/Tamil text would be garbled or rejected)."""
+    if engine.dialect.name != "mysql":
+        return None
+    from sqlalchemy import text
+
+    with engine.connect() as conn:
+        charset = conn.execute(text("SELECT @@character_set_database")).scalar()
+    if charset != "utf8mb4":
+        return (f"MySQL database charset is {charset}, not utf8mb4. Run: ALTER DATABASE <name> "
+                "CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;")
+    return None

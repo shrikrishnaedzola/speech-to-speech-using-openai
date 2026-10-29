@@ -25,7 +25,7 @@ cp .env.example .env          # then put your key in OPENAI_API_KEY
 cd backend
 python -m venv .venv
 .venv\Scripts\activate         # Windows   (macOS/Linux: source .venv/bin/activate)
-pip install -r requirements.txt   # also installs ../report_module
+pip install -r requirements-dev.txt   # runtime deps + tests + ../report_module (with PDF)
 playwright install chromium       # once, for PDF reports (~150 MB)
 uvicorn app.main:app --reload --port 8000
 
@@ -210,6 +210,68 @@ If OpenAI rejects a field, the error appears in red in Column 3, and the backend
 - [GPT-Live 1 model page](https://developers.openai.com/api/docs/models/gpt-live-1): $0.05/min billed per second, 15-second WebRTC init charge.
 - [Realtime function calling](https://developers.openai.com/api/docs/guides/realtime-function-calling): `session.tools`, `response.done` function calls, `conversation.item.create`.
 - [Function calling (strict mode)](https://developers.openai.com/api/docs/guides/function-calling): `additionalProperties: false`, all properties required.
+
+## Deploying to Vercel
+
+The repo deploys as **one Vercel project with two services**, set in [vercel.json](vercel.json):
+
+| Service | Folder | Handles |
+|---|---|---|
+| `frontend` | `frontend/` (Vite) | every path except `/api/...` |
+| `backend` | `backend/` (FastAPI, `app.main:app`) | `/api/...`. Reports run inside it; `report_module` is copied in by `backend/vendor_report_module.py` at build time |
+
+`report_module` is **not** a separate service.
+
+### What is different on Vercel
+
+| | Local | Vercel |
+|---|---|---|
+| Database | SQLite file | **MySQL** (Vercel's disk is wiped, so SQLite would lose data) |
+| PDF report download | On | **Off**. Download Markdown or JSON, or use the browser's Print → Save as PDF. Chromium is too big for Vercel. |
+| Recording the agent's voice (for MOS) | On | **Off** (no disk to store the audio) |
+
+The app detects Vercel through the `VERCEL=1` variable that Vercel sets. It refuses to start there without a MySQL `DATABASE_URL`, rather than losing data silently.
+
+### 1. Prepare MySQL
+
+- **The server must be reachable from the internet.** Vercel has no fixed IP addresses
+  on Hobby, so a MySQL server on a laptop or office network won't work. Use a hosted
+  MySQL server, allow remote connections, and turn on TLS.
+- **Create a database and a user for this app only**, with rights to that database.
+  Don't reuse the `root` user or another project's database.
+  ```sql
+  CREATE DATABASE voice_tester CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+  CREATE USER 'voice_tester'@'%' IDENTIFIED BY '<strong password>';
+  GRANT ALL PRIVILEGES ON voice_tester.* TO 'voice_tester'@'%';
+  ```
+  `utf8mb4` is required for Hindi, Tamil and other scripts. The app logs a warning if
+  the database uses another character set.
+- The tables are created automatically on the first request.
+
+### 2. Create the Vercel project
+
+1. Import the GitHub repo. Set **Root Directory to the repository root**, not `backend`,
+   and choose the **Services** framework preset, so Vercel reads `vercel.json`.
+2. **Settings → Environment Variables** (Production and Preview):
+
+   | Name | Value |
+   |---|---|
+   | `OPENAI_API_KEY` | your OpenAI project key |
+   | `DATABASE_URL` | `mysql+pymysql://voice_tester:<password>@<host>:3306/voice_tester?charset=utf8mb4` |
+   | `DATABASE_SSL` | `true` (if your MySQL server uses TLS, which it should) |
+
+   Enter secrets only in Vercel's settings. Never put them in code, chat or git.
+3. **Settings → Deployment Protection:** choose **Vercel Authentication** with the scope
+   **All Deployments**. This is free on Hobby. The default "Standard Protection" leaves the
+   production URL public, and anyone with that URL could spend your OpenAI key.
+4. Deploy. To check it, open the URL; Vercel should ask you to sign in. Then run **Simulate**, and finally a short real call.
+
+### Troubleshooting
+
+- **The build says `report_module not found`:** the Root Directory isn't the repo root.
+- **Only the frontend builds:** select the **Services** framework preset (Settings → Build and Deployment).
+- **The app fails at startup with "Set DATABASE_URL…":** `DATABASE_URL` is missing for that environment (Preview or Production).
+- **MySQL connection errors:** check the host allows remote connections, the user has `'%'` host access, and `DATABASE_SSL` matches the server.
 
 ## Policy reminders (EdZola)
 

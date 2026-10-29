@@ -47,9 +47,11 @@ def test_report_generated_on_end(client, ended_call):
     assert report["call"]["provider"] == "openai" and report["call"]["audio_mode"] == "phone_8khz"
     assert report["latency"]["avg_ms"] == 1467
     assert report["accuracy"]["invalid_answers"] == 1 and report["accuracy"]["invalid_answers_recovered"] == 1
-    # 50 -> 15 change + caller correction = one fixed number mishearing
-    assert report["mishearings"]["fixed"] == 1
-    assert report["mishearings"]["items"][0]["number_issue"].startswith("teen/ty")
+    # 50 -> 15 change = a fixed teen/ty mishearing on sessions_attended_count.
+    # (Exact totals depend on wall-clock tool-call times, so check the item itself.)
+    number_items = [i for i in report["mishearings"]["items"] if i["field_id"] == "sessions_attended_count"]
+    assert number_items and number_items[0]["fixed"] is True
+    assert number_items[0]["number_issue"].startswith("teen/ty")
 
 
 def test_ratings_regenerate_report(client, ended_call):

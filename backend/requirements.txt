@@ -1,10 +1,9 @@
+# Runtime dependencies (also what Vercel installs).
 fastapi==0.115.6
 uvicorn[standard]==0.32.1
 sqlalchemy==2.0.36
 httpx==0.28.1
 python-dotenv==1.0.1
-pytest==8.3.4
-
-# Shared post-call report module (sibling folder). PDF export also needs:
-#   playwright install chromium
--e ../report_module[pdf,test]
+pymysql==1.1.1          # MySQL driver (deployed database)
+# report_module's own runtime needs (it is copied in at build time on Vercel):
+jinja2>=3.1

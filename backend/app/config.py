@@ -38,8 +38,18 @@ class Settings:
     cost_per_min_realtime: float = _float("COST_PER_MIN_REALTIME", 0.10)
     live_init_seconds: float = _float("LIVE_INIT_SECONDS", 15)
 
-    # Relative sqlite paths are resolved from the backend/ folder.
+    # Local: SQLite file (relative paths are resolved from backend/).
+    # Deployed: MySQL, e.g. mysql+pymysql://USER:PASSWORD@HOST:3306/DBNAME?charset=utf8mb4
+    # Set it as an environment variable in Vercel - never commit it.
     database_url: str = os.getenv("DATABASE_URL", "sqlite:///./data/app.db")
+    # true = connect to MySQL over TLS (most hosted MySQL servers require it).
+    database_ssl: bool = os.getenv("DATABASE_SSL", "false").lower() == "true"
+
+    # Vercel sets VERCEL=1. There the disk is read-only and Chromium does not fit,
+    # so PDF export and agent-audio recording are turned off by default.
+    on_vercel: bool = os.getenv("VERCEL") == "1"
+    pdf_export: bool = os.getenv("PDF_EXPORT", "off" if on_vercel else "on").lower() == "on"
+    agent_audio: bool = os.getenv("AGENT_AUDIO", "off" if on_vercel else "on").lower() == "on"
 
     seed_forms_dir: Path = BACKEND_DIR / "seed_forms"
 

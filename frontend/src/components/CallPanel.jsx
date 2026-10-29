@@ -119,15 +119,18 @@ export default function CallPanel({
             { value: 'phone_8khz', label: 'Phone (8 kHz)' },
           ]}
         />
-        <label className="flex items-end gap-2 pb-1.5 text-sm text-slate-600">
-          <input
-            type="checkbox"
-            checked={settings.recordAudio}
-            onChange={(e) => set('recordAudio')(e.target.checked)}
-            disabled={inCall}
-          />
-          Record agent voice (for MOS)
-        </label>
+        {/* Hidden when the deployment cannot store audio (e.g. Vercel) */}
+        {config?.features?.agent_audio !== false && (
+          <label className="flex items-end gap-2 pb-1.5 text-sm text-slate-600">
+            <input
+              type="checkbox"
+              checked={settings.recordAudio}
+              onChange={(e) => set('recordAudio')(e.target.checked)}
+              disabled={inCall}
+            />
+            Record agent voice (for MOS)
+          </label>
+        )}
         {settings.mode === 'live' && (
           <label className="col-span-2 block text-sm">
             <span className="text-slate-600">Delegated tool model (GPT-Live backend)</span>

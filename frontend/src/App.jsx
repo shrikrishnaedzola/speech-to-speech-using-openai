@@ -223,7 +223,9 @@ export default function App() {
         trackerRef.current = tracker
         const remote = await controller.remoteStream
         tracker.start(controller.micStream, remote)
-        if (settings.recordAudio) recorderRef.current = startAgentRecorder(remote)
+        if (settings.recordAudio && config?.features?.agent_audio !== false) {
+          recorderRef.current = startAgentRecorder(remote)
+        }
       }
     } catch (err) {
       addError(`Could not start call: ${err.message}`)

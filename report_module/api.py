@@ -36,6 +36,7 @@ def make_report_router(
     save_ratings: Callable[[str, Ratings], None],
     settings_path: str | None = None,
     prefix: str = "/api/calls",
+    pdf_enabled: bool = True,
 ) -> APIRouter:
     router = APIRouter(prefix=prefix, tags=["report"])
 
@@ -72,6 +73,8 @@ def make_report_router(
         report = load_report(call_id) or generate(call_id)
         name = report["file_name_base"]
         if format == "pdf":
+            if not pdf_enabled:
+                raise HTTPException(501, "PDF export is turned off on this deployment. Use Markdown or JSON.")
             try:
                 content, media = to_pdf(report), "application/pdf"
             except RuntimeError as exc:  # Playwright/Chromium not installed

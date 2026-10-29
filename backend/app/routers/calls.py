@@ -91,6 +91,8 @@ async def upload_agent_audio(call_id: int, request: Request, db: Session = Depen
 
     Used for the optional MOS voice-quality score. Dummy test calls only.
     """
+    if not settings.agent_audio:
+        raise HTTPException(501, "Agent audio recording is turned off on this deployment.")
     call = _get_call(db, call_id)
     body = await request.body()
     if not body.startswith(b"RIFF") or len(body) > MAX_AUDIO_BYTES:
