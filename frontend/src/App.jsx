@@ -76,7 +76,12 @@ export default function App() {
 
   // Load dropdown options once.
   useEffect(() => {
-    Promise.all([api.config(), api.forms()])
+    api
+      .config()
+      .then((cfg) => {
+        if (cfg.startup_error) addError(`Backend database problem: ${cfg.startup_error}`)
+        return Promise.all([cfg, api.forms()])
+      })
       .then(([cfg, formList]) => {
         setConfig(cfg)
         setForms(formList)

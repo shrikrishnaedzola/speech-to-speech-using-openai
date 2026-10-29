@@ -92,3 +92,31 @@ def check_mysql_charset() -> str | None:
         return (f"MySQL database charset is {charset}, not utf8mb4. Run: ALTER DATABASE <name> "
                 "CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;")
     return None
+
+
+DB_HINTS = [
+    ("can't connect", "MySQL server not reachable from Vercel. It must accept remote connections "
+                      "(not localhost / your PC / an office network) on port 3306."),
+    ("timed out", "MySQL server not reachable from Vercel (connection timed out). Check host, port and firewall."),
+    ("access denied", "Wrong MySQL user/password, or the user is not allowed from outside ('user'@'%')."),
+    ("unknown database", "The database name in DATABASE_URL does not exist. Create it or fix the name."),
+    ("ssl", "TLS problem: try switching DATABASE_SSL between true and false to match your MySQL server."),
+    ("name or service not known", "The MySQL host name in DATABASE_URL is wrong (DNS lookup failed)."),
+    ("nodename nor servname", "The MySQL host name in DATABASE_URL is wrong (DNS lookup failed)."),
+]
+
+
+def describe_db_error(exc: Exception) -> str:
+    """One-line, password-free description of a database error, with a hint."""
+    from sqlalchemy.engine import make_url
+
+    text = f"{type(exc).__name__}: {getattr(exc, 'orig', None) or exc}"
+    try:
+        password = make_url(_url).password
+        if password:
+            text = text.replace(password, "***")
+    except Exception:
+        pass
+    text = text.splitlines()[0][:300] if text else text  # first line only: SQLAlchemy appends SQL and links
+    hint = next((h for key, h in DB_HINTS if key in text.lower()), None)
+    return f"{text} -> {hint}" if hint else text
