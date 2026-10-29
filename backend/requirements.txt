@@ -5,5 +5,6 @@ sqlalchemy==2.0.36
 httpx==0.28.1
 python-dotenv==1.0.1
 pymysql==1.1.1          # MySQL driver (deployed database)
+cryptography>=43        # needed by PyMySQL for MySQL 8 logins (caching_sha2_password)
 # report_module's own runtime needs (it is copied in at build time on Vercel):
 jinja2>=3.1
