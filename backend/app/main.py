@@ -1,10 +1,12 @@
 """FastAPI entry point. Run from backend/:  uvicorn app.main:app --reload --port 8000"""
 import logging
+import time
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from starlette.concurrency import run_in_threadpool
 
 from .config import LANGUAGES, VOICES, settings
 from .db import Base, SessionLocal, add_missing_columns, check_mysql_charset, describe_db_error, engine
@@ -16,29 +18,47 @@ from .services.forms import seed_forms
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:     %(name)s - %(message)s")
 
 
-# Set when the database could not be prepared at startup. The app keeps running
-# so /api/config can show the reason in the UI instead of a bare "500".
+log = logging.getLogger(__name__)
+
+# Set when the database could not be prepared. The app keeps running so
+# /api/config can show the reason in the UI instead of a bare "500".
 startup_error: str | None = None
+_last_attempt = 0.0
+RETRY_AFTER_S = 5  # while broken, try the database setup again at most this often
+
+
+def init_database(attempts: int = 3) -> None:
+    """Create tables, add new columns and load forms. Safe to run many times.
+
+    On Vercel several instances can start at the same moment and race to create
+    the same tables ("Table 'forms' already exists"). Running again fixes that,
+    because the second run sees the tables and skips them.
+    """
+    global startup_error, _last_attempt
+    _last_attempt = time.monotonic()
+    for attempt in range(1, attempts + 1):
+        try:
+            if warning := check_mysql_charset():
+                log.warning(warning)
+            Base.metadata.create_all(engine)  # only creates missing tables
+            add_missing_columns()  # upgrade an older database for the post-call report
+            with SessionLocal() as db:
+                seed_forms(db, settings.seed_forms_dir)
+            startup_error = None
+            return
+        except Exception as exc:
+            startup_error = describe_db_error(exc)
+            if attempt < attempts:
+                log.warning("Database setup attempt %s failed, retrying: %s", attempt, startup_error)
+                time.sleep(0.5 * attempt)
+    log.error("DATABASE STARTUP FAILED: %s", startup_error)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global startup_error
-    log = logging.getLogger(__name__)
     # Only says whether a key is present, never prints it.
     log.info("OPENAI_API_KEY configured: %s · database: %s", bool(settings.openai_api_key), engine.dialect.name)
-    try:
-        # Create tables and load all forms from seed_forms/*.json on startup.
-        if warning := check_mysql_charset():
-            log.warning(warning)
-        Base.metadata.create_all(engine)
-        add_missing_columns()  # upgrade an older data/app.db for the post-call report
-        with SessionLocal() as db:
-            seed_forms(db, settings.seed_forms_dir)
-        startup_error = None
-    except Exception as exc:
-        startup_error = describe_db_error(exc)
-        log.error("DATABASE STARTUP FAILED: %s", startup_error)
+    await run_in_threadpool(init_database)
     yield
 
 
@@ -47,7 +67,10 @@ app = FastAPI(title="Zolabs Voice Form Tester", lifespan=lifespan)
 
 @app.middleware("http")
 async def database_ready(request: Request, call_next):
-    """While the database is not ready, answer API calls with the reason (except /api/config)."""
+    """If the database is not ready, retry the setup now and then; until it works,
+    answer API calls with the reason (except /api/config, which shows it in the UI)."""
+    if startup_error and time.monotonic() - _last_attempt > RETRY_AFTER_S:
+        await run_in_threadpool(init_database, 1)
     if startup_error and request.url.path.startswith("/api/") and request.url.path != "/api/config":
         return JSONResponse({"detail": f"Database not ready: {startup_error}"}, status_code=503)
     return await call_next(request)
