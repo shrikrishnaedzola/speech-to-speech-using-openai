@@ -1,0 +1,20 @@
+Metadata-Version: 2.4
+Name: report_module
+Version: 1.0.0
+Summary: Shared post-call report for the Zolabs voice form testers
+Requires-Python: >=3.11
+Requires-Dist: pydantic>=2.7
+Requires-Dist: jinja2>=3.1
+Requires-Dist: matplotlib>=3.8
+Requires-Dist: httpx>=0.27
+Requires-Dist: fastapi>=0.110
+Provides-Extra: pdf
+Requires-Dist: playwright>=1.48; extra == "pdf"
+Provides-Extra: mos
+Requires-Dist: torch>=2.2; extra == "mos"
+Requires-Dist: torchaudio>=2.2; extra == "mos"
+Requires-Dist: numpy>=1.26; extra == "mos"
+Requires-Dist: soundfile>=0.12; extra == "mos"
+Provides-Extra: test
+Requires-Dist: pytest>=8; extra == "test"
+Requires-Dist: jsonschema>=4.21; extra == "test"

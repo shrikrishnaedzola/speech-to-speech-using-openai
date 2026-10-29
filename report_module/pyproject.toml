@@ -1,0 +1,33 @@
+# Install into any tester's virtualenv:   pip install -e ../report_module
+# With PDF export:                          pip install -e "../report_module[pdf]"  then  playwright install chromium
+# With the optional MOS scorer (~2 GB):     pip install -e "../report_module[mos]"
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "report_module"
+version = "1.0.0"
+description = "Shared post-call report for the Zolabs voice form testers"
+requires-python = ">=3.11"
+dependencies = [
+  "pydantic>=2.7",
+  "jinja2>=3.1",
+  "matplotlib>=3.8",
+  "httpx>=0.27",
+  "fastapi>=0.110",
+]
+
+[project.optional-dependencies]
+pdf = ["playwright>=1.48"]
+mos = ["torch>=2.2", "torchaudio>=2.2", "numpy>=1.26", "soundfile>=0.12"]
+test = ["pytest>=8", "jsonschema>=4.21"]
+
+# The files live directly in this folder, so map the package name to ".".
+[tool.setuptools]
+package-dir = { "report_module" = ".", "report_module.adapters" = "adapters", "report_module.exporters" = "exporters" }
+packages = ["report_module", "report_module.adapters", "report_module.exporters"]
+
+[tool.setuptools.package-data]
+report_module = ["settings.json", "templates/*", "samples/*.json"]
+"report_module.exporters" = ["*.json"]

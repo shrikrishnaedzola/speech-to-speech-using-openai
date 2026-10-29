@@ -1,0 +1,162 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://zolabs.edzola.internal/schemas/post-call-report-1.0.json",
+  "title": "Zolabs post-call report",
+  "description": "Same shape for every provider (openai, sarvam, gemini, elevenlabs). Null means 'not available'.",
+  "type": "object",
+  "required": ["schema_version", "generated_at", "test_mode", "file_name_base", "call", "summary", "transcript",
+               "mishearings", "voice_quality", "latency", "language", "accuracy", "cost", "issues", "pii", "ai_summary"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "generated_at": { "type": "string" },
+    "test_mode": { "const": true },
+    "banner": { "type": "string" },
+    "footer": { "type": "string" },
+    "file_name_base": { "type": "string", "pattern": "^report_" },
+    "call": {
+      "type": "object",
+      "required": ["call_id", "provider", "model", "language", "audio_mode", "started_at", "duration_s", "form_completed"],
+      "properties": {
+        "call_id": { "type": "string" },
+        "provider": { "enum": ["openai", "sarvam", "gemini", "elevenlabs"] },
+        "model": { "type": "string" },
+        "voice": { "type": ["string", "null"] },
+        "language": { "type": "string" },
+        "audio_mode": { "enum": ["normal", "phone_8khz"] },
+        "started_at": { "type": "string" },
+        "duration_s": { "type": ["number", "null"] },
+        "form_name": { "type": ["string", "null"] },
+        "form_completed": { "type": "boolean" }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["score", "verdict", "parts", "weights", "missing_parts", "strengths", "problems"],
+      "properties": {
+        "score": { "type": ["integer", "null"], "minimum": 0, "maximum": 100 },
+        "verdict": { "enum": ["Good", "Needs improvement", "Poor", "Not enough data"] },
+        "parts": {
+          "type": "object",
+          "required": ["accuracy", "mishearings", "latency", "voice_quality", "language", "cost"],
+          "additionalProperties": { "type": ["number", "null"] }
+        },
+        "weights": { "type": "object" },
+        "missing_parts": { "type": "array", "items": { "type": "string" } },
+        "strengths": { "type": "array", "items": { "type": "string" }, "maxItems": 3 },
+        "problems": { "type": "array", "items": { "type": "string" }, "maxItems": 3 }
+      }
+    },
+    "transcript": {
+      "type": "object",
+      "required": ["items", "legend"],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["kind", "ts_ms", "time", "tags"],
+            "properties": {
+              "kind": { "enum": ["turn", "tool"] },
+              "role": { "enum": ["caller", "agent"] },
+              "text": { "type": "string" },
+              "ts_ms": { "type": ["number", "null"] },
+              "time": { "type": "string" },
+              "detected_language": { "type": ["string", "null"] },
+              "tags": { "type": "array", "items": { "enum": ["mishearing", "reask", "tool_call", "interruption", "wrong_language"] } }
+            }
+          }
+        }
+      }
+    },
+    "mishearings": {
+      "type": "object",
+      "required": ["items", "total", "fixed", "unfixed", "number_issues", "wer", "cer"],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["ts_ms", "said", "heard", "field_id", "fixed", "source"],
+            "properties": {
+              "source": { "enum": ["value", "changed_value", "marked_wrong", "caller_correction"] },
+              "fixed": { "type": "boolean" }
+            }
+          }
+        },
+        "total": { "type": "integer" },
+        "fixed": { "type": "integer" },
+        "unfixed": { "type": "integer" },
+        "number_issues": { "type": "integer" },
+        "wer": { "type": ["number", "null"] },
+        "cer": { "type": ["number", "null"] }
+      }
+    },
+    "voice_quality": {
+      "type": "object",
+      "required": ["ratings", "ratings_avg", "mos", "issues"],
+      "properties": {
+        "ratings": {
+          "type": "object",
+          "required": ["naturalness", "clarity", "pronunciation", "accent_fit", "politeness"],
+          "additionalProperties": { "type": ["integer", "null"], "minimum": 1, "maximum": 5 }
+        },
+        "ratings_avg": { "type": ["number", "null"] },
+        "mos": { "type": "object", "required": ["mos"], "properties": { "mos": { "type": ["number", "null"] } } },
+        "issues": {
+          "type": "object",
+          "required": ["long_silences", "talk_over_count", "cut_off_sentences", "repeated_phrases"]
+        }
+      }
+    },
+    "latency": {
+      "type": "object",
+      "required": ["turns", "avg_ms", "median_ms", "p90_ms", "max_ms", "rating", "per_turn", "has_stage_split", "slowest"],
+      "properties": {
+        "avg_ms": { "type": ["integer", "null"] },
+        "median_ms": { "type": ["integer", "null"] },
+        "p90_ms": { "type": ["integer", "null"] },
+        "max_ms": { "type": ["integer", "null"] },
+        "rating": { "enum": ["Good", "OK", "Poor", null] }
+      }
+    },
+    "language": {
+      "type": "object",
+      "required": ["selected", "detected_caller_languages", "agent_correct_language_pct", "code_mixing_rating", "language_mishearings"]
+    },
+    "accuracy": {
+      "type": "object",
+      "required": ["field_accuracy", "completion", "follow_ups", "follow_up_errors", "invalid_answers",
+                   "invalid_answers_recovered", "corrections_saved", "tool_success_rate", "validation_errors", "table"],
+      "properties": {
+        "field_accuracy": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "completion": { "type": ["number", "null"], "minimum": 0, "maximum": 1 }
+      }
+    },
+    "cost": {
+      "type": "object",
+      "required": ["total_usd", "total_inr", "breakdown", "cost_per_min_usd", "cost_per_completed_form_usd",
+                   "projection_1000_calls_usd", "rates_last_updated", "warnings"]
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["severity", "section", "title", "suggestion"],
+        "properties": { "severity": { "enum": ["High", "Medium", "Low"] } }
+      }
+    },
+    "pii": {
+      "type": "object",
+      "required": ["found", "warnings"],
+      "properties": { "found": { "type": "boolean" } }
+    },
+    "ai_summary": {
+      "type": ["object", "null"],
+      "properties": {
+        "text": { "type": ["string", "null"] },
+        "label": { "type": "string" },
+        "unverified_numbers": { "type": "array" }
+      }
+    }
+  }
+}

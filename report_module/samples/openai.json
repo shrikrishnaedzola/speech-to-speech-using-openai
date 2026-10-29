@@ -1,0 +1,650 @@
+{
+  "call": {
+    "call_id": "sample-openai-1",
+    "provider": "openai",
+    "model": "gpt-live-1",
+    "voice": "marin",
+    "language": "English",
+    "audio_mode": "normal",
+    "started_at": "2026-10-27T10:15:00+05:30",
+    "duration_s": 107.3,
+    "form_name": "Program Feedback Survey (Test)",
+    "form_completed": true
+  },
+  "transcript": [
+    {
+      "role": "caller",
+      "text": "Hello",
+      "ts_ms": 700.0
+    },
+    {
+      "role": "agent",
+      "text": "Hello! I am calling from the program team. This takes about 3 minutes. Is this a good time?",
+      "ts_ms": 2850.0
+    },
+    {
+      "role": "caller",
+      "text": "Yes, go ahead.",
+      "ts_ms": 9490.0
+    },
+    {
+      "role": "agent",
+      "text": "Thank you. May I know your name, please?",
+      "ts_ms": 12040.0
+    },
+    {
+      "role": "caller",
+      "text": "My name is Test Person One.",
+      "ts_ms": 15380.0
+    },
+    {
+      "role": "agent",
+      "text": "Thank you. How old are you?",
+      "ts_ms": 20080.0
+    },
+    {
+      "role": "caller",
+      "text": "I am thirty five.",
+      "ts_ms": 22760.0
+    },
+    {
+      "role": "agent",
+      "text": "Which district do you live in?",
+      "ts_ms": 26560.0
+    },
+    {
+      "role": "caller",
+      "text": "Sample District.",
+      "ts_ms": 29240.0
+    },
+    {
+      "role": "agent",
+      "text": "Did you attend any of the program sessions?",
+      "ts_ms": 32140.0
+    },
+    {
+      "role": "caller",
+      "text": "Yes I did.",
+      "ts_ms": 35480.0
+    },
+    {
+      "role": "agent",
+      "text": "How many sessions did you attend?",
+      "ts_ms": 39430.0
+    },
+    {
+      "role": "caller",
+      "text": "Fifty sessions.",
+      "ts_ms": 42110.0
+    },
+    {
+      "role": "agent",
+      "text": "Okay, fifty sessions. How many children do you have?",
+      "ts_ms": 45910.0
+    },
+    {
+      "role": "caller",
+      "text": "No, I said fifteen, not fifty.",
+      "ts_ms": 49580.0
+    },
+    {
+      "role": "agent",
+      "text": "Sorry about that, fifteen sessions. How many children do you have?",
+      "ts_ms": 54380.0
+    },
+    {
+      "role": "caller",
+      "text": "Two.",
+      "ts_ms": 58710.0
+    },
+    {
+      "role": "agent",
+      "text": "What are the ages of your children?",
+      "ts_ms": 61160.0
+    },
+    {
+      "role": "caller",
+      "text": "Six.",
+      "ts_ms": 64170.0
+    },
+    {
+      "role": "agent",
+      "text": "You said two children. Could you tell me both ages?",
+      "ts_ms": 67020.0
+    },
+    {
+      "role": "caller",
+      "text": "Six and nine.",
+      "ts_ms": 71020.0
+    },
+    {
+      "role": "agent",
+      "text": "On a scale of 1 to 5, how satisfied are you with the program?",
+      "ts_ms": 74370.0
+    },
+    {
+      "role": "caller",
+      "text": "Four.",
+      "ts_ms": 79690.0
+    },
+    {
+      "role": "agent",
+      "text": "Any suggestion to improve the program?",
+      "ts_ms": 82040.0
+    },
+    {
+      "role": "caller",
+      "text": "No, nothing.",
+      "ts_ms": 84720.0
+    },
+    {
+      "role": "agent",
+      "text": "May we call you again later for a follow-up?",
+      "ts_ms": 87320.0
+    },
+    {
+      "role": "caller",
+      "text": "Yes, that's fine.",
+      "ts_ms": 90990.0
+    },
+    {
+      "role": "agent",
+      "text": "To confirm: Test Person One, 35, Sample District, 15 sessions, two children aged 6 and 9, rating 4. Correct?",
+      "ts_ms": 94240.0
+    },
+    {
+      "role": "caller",
+      "text": "Yes, correct.",
+      "ts_ms": 101210.0
+    },
+    {
+      "role": "agent",
+      "text": "Thank you for your time. Have a good day!",
+      "ts_ms": 104310.0
+    }
+  ],
+  "fields": [
+    {
+      "id": "caller_name",
+      "label": "Caller name",
+      "type": "text",
+      "required": true,
+      "condition": null,
+      "active": true,
+      "status": "filled",
+      "saved_value": "Test Person One",
+      "expected_value": "Test Person One",
+      "review_mark": "correct"
+    },
+    {
+      "id": "age",
+      "label": "Age",
+      "type": "number",
+      "required": true,
+      "condition": null,
+      "active": true,
+      "status": "filled",
+      "saved_value": 35,
+      "expected_value": 35,
+      "review_mark": "correct"
+    },
+    {
+      "id": "district",
+      "label": "District",
+      "type": "text",
+      "required": true,
+      "condition": null,
+      "active": true,
+      "status": "filled",
+      "saved_value": "Sample District",
+      "expected_value": "Sample District",
+      "review_mark": "correct"
+    },
+    {
+      "id": "preferred_language",
+      "label": "Preferred language",
+      "type": "choice",
+      "required": false,
+      "condition": null,
+      "active": true,
+      "status": "pending",
+      "saved_value": null,
+      "expected_value": null,
+      "review_mark": null
+    },
+    {
+      "id": "attended_sessions",
+      "label": "Attended sessions",
+      "type": "yes_no",
+      "required": true,
+      "condition": null,
+      "active": true,
+      "status": "filled",
+      "saved_value": true,
+      "expected_value": true,
+      "review_mark": "correct"
+    },
+    {
+      "id": "reason_not_attended",
+      "label": "Reason not attended",
+      "type": "text",
+      "required": true,
+      "condition": "attended_sessions = no",
+      "active": false,
+      "status": "pending",
+      "saved_value": null,
+      "expected_value": null,
+      "review_mark": null
+    },
+    {
+      "id": "sessions_attended_count",
+      "label": "Sessions attended",
+      "type": "number",
+      "required": true,
+      "condition": "attended_sessions = yes",
+      "active": true,
+      "status": "filled",
+      "saved_value": 15,
+      "expected_value": 15,
+      "review_mark": "correct"
+    },
+    {
+      "id": "number_of_children",
+      "label": "Number of children",
+      "type": "number",
+      "required": true,
+      "condition": null,
+      "active": true,
+      "status": "filled",
+      "saved_value": 2,
+      "expected_value": 2,
+      "review_mark": "correct"
+    },
+    {
+      "id": "children_ages",
+      "label": "Children's ages",
+      "type": "list_number",
+      "required": true,
+      "condition": "number_of_children > 0",
+      "active": true,
+      "status": "filled",
+      "saved_value": [
+        6,
+        9
+      ],
+      "expected_value": [
+        6,
+        9
+      ],
+      "review_mark": "correct"
+    },
+    {
+      "id": "satisfaction_rating",
+      "label": "Satisfaction rating",
+      "type": "number",
+      "required": true,
+      "condition": null,
+      "active": true,
+      "status": "filled",
+      "saved_value": 4,
+      "expected_value": 4,
+      "review_mark": "correct"
+    },
+    {
+      "id": "improvement_suggestion",
+      "label": "Improvement suggestion",
+      "type": "text",
+      "required": false,
+      "condition": null,
+      "active": true,
+      "status": "skipped",
+      "saved_value": null,
+      "expected_value": null,
+      "review_mark": null
+    },
+    {
+      "id": "consent_to_followup",
+      "label": "Consent to follow-up",
+      "type": "yes_no",
+      "required": true,
+      "condition": null,
+      "active": true,
+      "status": "filled",
+      "saved_value": true,
+      "expected_value": true,
+      "review_mark": "correct"
+    }
+  ],
+  "turn_metrics": [
+    {
+      "turn": 1,
+      "latency_ms": 1800,
+      "ts_ms": 2850.0
+    },
+    {
+      "turn": 2,
+      "latency_ms": 1500,
+      "ts_ms": 12040.0
+    },
+    {
+      "turn": 3,
+      "latency_ms": 2600,
+      "ts_ms": 20080.0
+    },
+    {
+      "turn": 4,
+      "latency_ms": 2400,
+      "ts_ms": 26560.0
+    },
+    {
+      "turn": 5,
+      "latency_ms": 2200,
+      "ts_ms": 32140.0
+    },
+    {
+      "turn": 6,
+      "latency_ms": 2900,
+      "ts_ms": 39430.0
+    },
+    {
+      "turn": 7,
+      "latency_ms": 3100,
+      "ts_ms": 45910.0
+    },
+    {
+      "turn": 8,
+      "latency_ms": 2700,
+      "ts_ms": 54380.0
+    },
+    {
+      "turn": 9,
+      "latency_ms": 2100,
+      "ts_ms": 61160.0
+    },
+    {
+      "turn": 10,
+      "latency_ms": 2500,
+      "ts_ms": 67020.0
+    },
+    {
+      "turn": 11,
+      "latency_ms": 2300,
+      "ts_ms": 74370.0
+    },
+    {
+      "turn": 12,
+      "latency_ms": 2000,
+      "ts_ms": 82040.0
+    },
+    {
+      "turn": 13,
+      "latency_ms": 1900,
+      "ts_ms": 87320.0
+    },
+    {
+      "turn": 14,
+      "latency_ms": 2200,
+      "ts_ms": 94240.0
+    },
+    {
+      "turn": 15,
+      "latency_ms": 2400,
+      "ts_ms": 104310.0
+    }
+  ],
+  "tool_calls": [
+    {
+      "name": "save_answer",
+      "arguments": {
+        "field_id": "caller_name",
+        "value": "Test Person One",
+        "confidence": "high"
+      },
+      "success": true,
+      "result": {
+        "ok": true,
+        "saved": "caller_name",
+        "value": "Test Person One"
+      },
+      "duration_ms": 11.0,
+      "ts_ms": 17630.0
+    },
+    {
+      "name": "save_answer",
+      "arguments": {
+        "field_id": "age",
+        "value": "35",
+        "confidence": "high"
+      },
+      "success": true,
+      "result": {
+        "ok": true,
+        "saved": "age",
+        "value": 35
+      },
+      "duration_ms": 11.0,
+      "ts_ms": 24310.0
+    },
+    {
+      "name": "save_answer",
+      "arguments": {
+        "field_id": "district",
+        "value": "Sample District",
+        "confidence": "high"
+      },
+      "success": true,
+      "result": {
+        "ok": true,
+        "saved": "district",
+        "value": "Sample District"
+      },
+      "duration_ms": 11.0,
+      "ts_ms": 30090.0
+    },
+    {
+      "name": "save_answer",
+      "arguments": {
+        "field_id": "attended_sessions",
+        "value": "yes",
+        "confidence": "high"
+      },
+      "success": true,
+      "result": {
+        "ok": true,
+        "saved": "attended_sessions",
+        "value": true
+      },
+      "duration_ms": 11.0,
+      "ts_ms": 36680.0
+    },
+    {
+      "name": "save_answer",
+      "arguments": {
+        "field_id": "sessions_attended_count",
+        "value": "50",
+        "confidence": "high"
+      },
+      "success": true,
+      "result": {
+        "ok": true,
+        "saved": "sessions_attended_count",
+        "value": 50
+      },
+      "duration_ms": 11.0,
+      "ts_ms": 42960.0
+    },
+    {
+      "name": "save_answer",
+      "arguments": {
+        "field_id": "sessions_attended_count",
+        "value": "15",
+        "confidence": "high"
+      },
+      "success": true,
+      "result": {
+        "ok": true,
+        "saved": "sessions_attended_count",
+        "value": 15
+      },
+      "duration_ms": 11.0,
+      "ts_ms": 51830.0
+    },
+    {
+      "name": "save_answer",
+      "arguments": {
+        "field_id": "number_of_children",
+        "value": "2",
+        "confidence": "high"
+      },
+      "success": true,
+      "result": {
+        "ok": true,
+        "saved": "number_of_children",
+        "value": 2
+      },
+      "duration_ms": 11.0,
+      "ts_ms": 59210.0
+    },
+    {
+      "name": "save_answer",
+      "arguments": {
+        "field_id": "children_ages",
+        "value": "6",
+        "confidence": "high"
+      },
+      "success": false,
+      "result": {
+        "ok": false,
+        "error": "Got 1 values but number_of_children is 2. Please confirm with the caller."
+      },
+      "duration_ms": 11.0,
+      "ts_ms": 64670.0
+    },
+    {
+      "name": "save_answer",
+      "arguments": {
+        "field_id": "children_ages",
+        "value": "6, 9",
+        "confidence": "high"
+      },
+      "success": true,
+      "result": {
+        "ok": true,
+        "saved": "children_ages",
+        "value": [
+          6,
+          9
+        ]
+      },
+      "duration_ms": 11.0,
+      "ts_ms": 72220.0
+    },
+    {
+      "name": "save_answer",
+      "arguments": {
+        "field_id": "satisfaction_rating",
+        "value": "4",
+        "confidence": "high"
+      },
+      "success": true,
+      "result": {
+        "ok": true,
+        "saved": "satisfaction_rating",
+        "value": 4
+      },
+      "duration_ms": 11.0,
+      "ts_ms": 80190.0
+    },
+    {
+      "name": "skip_field",
+      "arguments": {
+        "field_id": "improvement_suggestion",
+        "reason": "none"
+      },
+      "success": true,
+      "result": {
+        "ok": true
+      },
+      "duration_ms": 9.0,
+      "ts_ms": 85570.0
+    },
+    {
+      "name": "save_answer",
+      "arguments": {
+        "field_id": "consent_to_followup",
+        "value": "yes",
+        "confidence": "high"
+      },
+      "success": true,
+      "result": {
+        "ok": true,
+        "saved": "consent_to_followup",
+        "value": true
+      },
+      "duration_ms": 11.0,
+      "ts_ms": 92190.0
+    },
+    {
+      "name": "complete_form",
+      "arguments": {},
+      "success": true,
+      "result": {
+        "ok": true
+      },
+      "duration_ms": 9.0,
+      "ts_ms": 102060.0
+    }
+  ],
+  "usage": {
+    "voice_seconds": 122
+  },
+  "interruptions": 1,
+  "events": [
+    {
+      "type": "barge_in",
+      "ts_ms": 49080.0
+    }
+  ],
+  "ratings": {
+    "naturalness": 4,
+    "clarity": 4,
+    "pronunciation": 5,
+    "accent_fit": 4,
+    "politeness": 5
+  },
+  "scenario": {
+    "id": "feedback-en-1",
+    "name": "English happy path with a number correction",
+    "caller_script": [
+      "Hello",
+      "Yes, go ahead.",
+      "My name is Test Person One.",
+      "I am thirty five.",
+      "Sample District.",
+      "Yes I did.",
+      "Fifteen sessions.",
+      "No, I said fifteen, not fifty.",
+      "Two.",
+      "Six.",
+      "Six and nine.",
+      "Four.",
+      "No, nothing.",
+      "Yes, that's fine.",
+      "Yes, correct."
+    ],
+    "expected_answers": {
+      "caller_name": "Test Person One",
+      "age": 35,
+      "district": "Sample District",
+      "attended_sessions": true,
+      "sessions_attended_count": 15,
+      "number_of_children": 2,
+      "children_ages": [
+        6,
+        9
+      ],
+      "satisfaction_rating": 4,
+      "consent_to_followup": true
+    }
+  }
+}

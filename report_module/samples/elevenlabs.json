@@ -1,0 +1,530 @@
+{
+  "call": {
+    "call_id": "sample-elevenlabs-1",
+    "provider": "elevenlabs",
+    "model": "eleven_realtime_v1_max",
+    "voice": "test-voice-en",
+    "language": "English",
+    "audio_mode": "phone_8khz",
+    "started_at": "2026-10-27T14:45:00+05:30",
+    "duration_s": 54.6,
+    "form_name": "Program Feedback Survey (Test)",
+    "form_completed": true
+  },
+  "transcript": [
+    {
+      "role": "agent",
+      "text": "Hi! I'm calling from the program team for a short 3 minute feedback call. Is now a good time?",
+      "ts_ms": 300.0
+    },
+    {
+      "role": "caller",
+      "text": "Sure.",
+      "ts_ms": 7270.0
+    },
+    {
+      "role": "agent",
+      "text": "Great. What's your name?",
+      "ts_ms": 8240.0
+    },
+    {
+      "role": "caller",
+      "text": "Test Person Four.",
+      "ts_ms": 10260.0
+    },
+    {
+      "role": "agent",
+      "text": "And your age?",
+      "ts_ms": 11890.0
+    },
+    {
+      "role": "caller",
+      "text": "Fifty.",
+      "ts_ms": 13580.0
+    },
+    {
+      "role": "agent",
+      "text": "Which district are you in?",
+      "ts_ms": 14570.0
+    },
+    {
+      "role": "caller",
+      "text": "Sample District. You can also reach me on 98765 43210.",
+      "ts_ms": 16920.0
+    },
+    {
+      "role": "agent",
+      "text": "Thanks, I don't need a phone number. Did you attend any sessions?",
+      "ts_ms": 21120.0
+    },
+    {
+      "role": "caller",
+      "text": "No.",
+      "ts_ms": 25780.0
+    },
+    {
+      "role": "agent",
+      "text": "May I ask why you couldn't attend?",
+      "ts_ms": 26690.0
+    },
+    {
+      "role": "caller",
+      "text": "The timing did not suit me.",
+      "ts_ms": 29700.0
+    },
+    {
+      "role": "agent",
+      "text": "How many children do you have?",
+      "ts_ms": 32410.0
+    },
+    {
+      "role": "caller",
+      "text": "One.",
+      "ts_ms": 35090.0
+    },
+    {
+      "role": "agent",
+      "text": "How old is your child?",
+      "ts_ms": 36030.0
+    },
+    {
+      "role": "caller",
+      "text": "Twelve.",
+      "ts_ms": 38380.0
+    },
+    {
+      "role": "agent",
+      "text": "From 1 to 5, how satisfied are you with the",
+      "ts_ms": 39330.0
+    },
+    {
+      "role": "caller",
+      "text": "Three.",
+      "ts_ms": 43330.0
+    },
+    {
+      "role": "agent",
+      "text": "Any suggestion to improve the program?",
+      "ts_ms": 44330.0
+    },
+    {
+      "role": "caller",
+      "text": "More evening sessions.",
+      "ts_ms": 47010.0
+    },
+    {
+      "role": "agent",
+      "text": "Can we call you again later?",
+      "ts_ms": 48690.0
+    },
+    {
+      "role": "caller",
+      "text": "Yes.",
+      "ts_ms": 51370.0
+    },
+    {
+      "role": "agent",
+      "text": "Thanks so much, have a lovely day!",
+      "ts_ms": 52290.0
+    }
+  ],
+  "fields": [
+    {
+      "id": "caller_name",
+      "label": "Caller name",
+      "type": "text",
+      "required": true,
+      "condition": null,
+      "active": true,
+      "status": "filled",
+      "saved_value": "Test Person Four",
+      "expected_value": null,
+      "review_mark": "correct"
+    },
+    {
+      "id": "age",
+      "label": "Age",
+      "type": "number",
+      "required": true,
+      "condition": null,
+      "active": true,
+      "status": "filled",
+      "saved_value": 50,
+      "expected_value": null,
+      "review_mark": "correct"
+    },
+    {
+      "id": "district",
+      "label": "District",
+      "type": "text",
+      "required": true,
+      "condition": null,
+      "active": true,
+      "status": "filled",
+      "saved_value": "Sample District",
+      "expected_value": null,
+      "review_mark": "correct"
+    },
+    {
+      "id": "preferred_language",
+      "label": "Preferred language",
+      "type": "choice",
+      "required": false,
+      "condition": null,
+      "active": true,
+      "status": "pending",
+      "saved_value": null,
+      "expected_value": null,
+      "review_mark": null
+    },
+    {
+      "id": "attended_sessions",
+      "label": "Attended sessions",
+      "type": "yes_no",
+      "required": true,
+      "condition": null,
+      "active": true,
+      "status": "filled",
+      "saved_value": false,
+      "expected_value": null,
+      "review_mark": "correct"
+    },
+    {
+      "id": "reason_not_attended",
+      "label": "Reason not attended",
+      "type": "text",
+      "required": true,
+      "condition": "attended_sessions = no",
+      "active": true,
+      "status": "filled",
+      "saved_value": "The timing did not suit me",
+      "expected_value": null,
+      "review_mark": "correct"
+    },
+    {
+      "id": "sessions_attended_count",
+      "label": "Sessions attended",
+      "type": "number",
+      "required": true,
+      "condition": "attended_sessions = yes",
+      "active": false,
+      "status": "pending",
+      "saved_value": null,
+      "expected_value": null,
+      "review_mark": null
+    },
+    {
+      "id": "number_of_children",
+      "label": "Number of children",
+      "type": "number",
+      "required": true,
+      "condition": null,
+      "active": true,
+      "status": "filled",
+      "saved_value": 1,
+      "expected_value": null,
+      "review_mark": "correct"
+    },
+    {
+      "id": "children_ages",
+      "label": "Children's ages",
+      "type": "list_number",
+      "required": true,
+      "condition": "number_of_children > 0",
+      "active": true,
+      "status": "filled",
+      "saved_value": [
+        12
+      ],
+      "expected_value": null,
+      "review_mark": "correct"
+    },
+    {
+      "id": "satisfaction_rating",
+      "label": "Satisfaction rating",
+      "type": "number",
+      "required": true,
+      "condition": null,
+      "active": true,
+      "status": "filled",
+      "saved_value": 3,
+      "expected_value": null,
+      "review_mark": "correct"
+    },
+    {
+      "id": "improvement_suggestion",
+      "label": "Improvement suggestion",
+      "type": "text",
+      "required": false,
+      "condition": null,
+      "active": true,
+      "status": "filled",
+      "saved_value": "More evening sessions",
+      "expected_value": null,
+      "review_mark": "correct"
+    },
+    {
+      "id": "consent_to_followup",
+      "label": "Consent to follow-up",
+      "type": "yes_no",
+      "required": true,
+      "condition": null,
+      "active": true,
+      "status": "filled",
+      "saved_value": true,
+      "expected_value": null,
+      "review_mark": "correct"
+    }
+  ],
+  "turn_metrics": [
+    {
+      "turn": 1,
+      "latency_ms": 620,
+      "ts_ms": 8240.0
+    },
+    {
+      "turn": 2,
+      "latency_ms": 580,
+      "ts_ms": 11890.0
+    },
+    {
+      "turn": 3,
+      "latency_ms": 640,
+      "ts_ms": 14570.0
+    },
+    {
+      "turn": 4,
+      "latency_ms": 700,
+      "ts_ms": 21120.0
+    },
+    {
+      "turn": 5,
+      "latency_ms": 560,
+      "ts_ms": 26690.0
+    },
+    {
+      "turn": 6,
+      "latency_ms": 610,
+      "ts_ms": 32410.0
+    },
+    {
+      "turn": 7,
+      "latency_ms": 590,
+      "ts_ms": 36030.0
+    },
+    {
+      "turn": 8,
+      "latency_ms": 600,
+      "ts_ms": 39330.0
+    },
+    {
+      "turn": 9,
+      "latency_ms": 650,
+      "ts_ms": 44330.0
+    },
+    {
+      "turn": 10,
+      "latency_ms": 630,
+      "ts_ms": 48690.0
+    },
+    {
+      "turn": 11,
+      "latency_ms": 570,
+      "ts_ms": 52290.0
+    }
+  ],
+  "tool_calls": [
+    {
+      "name": "save_answer",
+      "arguments": {
+        "field_id": "caller_name",
+        "value": "Test Person Four",
+        "confidence": "high"
+      },
+      "success": true,
+      "result": {
+        "ok": true,
+        "saved": "caller_name",
+        "value": "Test Person Four"
+      },
+      "duration_ms": 11.0,
+      "ts_ms": 11460.0
+    },
+    {
+      "name": "save_answer",
+      "arguments": {
+        "field_id": "age",
+        "value": "50",
+        "confidence": "high"
+      },
+      "success": true,
+      "result": {
+        "ok": true,
+        "saved": "age",
+        "value": 50
+      },
+      "duration_ms": 11.0,
+      "ts_ms": 14080.0
+    },
+    {
+      "name": "save_answer",
+      "arguments": {
+        "field_id": "district",
+        "value": "Sample District",
+        "confidence": "high"
+      },
+      "success": true,
+      "result": {
+        "ok": true,
+        "saved": "district",
+        "value": "Sample District"
+      },
+      "duration_ms": 11.0,
+      "ts_ms": 20570.0
+    },
+    {
+      "name": "save_answer",
+      "arguments": {
+        "field_id": "attended_sessions",
+        "value": "no",
+        "confidence": "high"
+      },
+      "success": true,
+      "result": {
+        "ok": true,
+        "saved": "attended_sessions",
+        "value": false
+      },
+      "duration_ms": 11.0,
+      "ts_ms": 26280.0
+    },
+    {
+      "name": "save_answer",
+      "arguments": {
+        "field_id": "reason_not_attended",
+        "value": "The timing did not suit me",
+        "confidence": "high"
+      },
+      "success": true,
+      "result": {
+        "ok": true,
+        "saved": "reason_not_attended",
+        "value": "The timing did not suit me"
+      },
+      "duration_ms": 11.0,
+      "ts_ms": 31950.0
+    },
+    {
+      "name": "save_answer",
+      "arguments": {
+        "field_id": "number_of_children",
+        "value": "1",
+        "confidence": "high"
+      },
+      "success": true,
+      "result": {
+        "ok": true,
+        "saved": "number_of_children",
+        "value": 1
+      },
+      "duration_ms": 11.0,
+      "ts_ms": 35590.0
+    },
+    {
+      "name": "save_answer",
+      "arguments": {
+        "field_id": "children_ages",
+        "value": "12",
+        "confidence": "high"
+      },
+      "success": true,
+      "result": {
+        "ok": true,
+        "saved": "children_ages",
+        "value": [
+          12
+        ]
+      },
+      "duration_ms": 11.0,
+      "ts_ms": 38880.0
+    },
+    {
+      "name": "save_answer",
+      "arguments": {
+        "field_id": "satisfaction_rating",
+        "value": "3",
+        "confidence": "high"
+      },
+      "success": true,
+      "result": {
+        "ok": true,
+        "saved": "satisfaction_rating",
+        "value": 3
+      },
+      "duration_ms": 11.0,
+      "ts_ms": 43830.0
+    },
+    {
+      "name": "save_answer",
+      "arguments": {
+        "field_id": "improvement_suggestion",
+        "value": "More evening sessions",
+        "confidence": "high"
+      },
+      "success": true,
+      "result": {
+        "ok": true,
+        "saved": "improvement_suggestion",
+        "value": "More evening sessions"
+      },
+      "duration_ms": 11.0,
+      "ts_ms": 48210.0
+    },
+    {
+      "name": "save_answer",
+      "arguments": {
+        "field_id": "consent_to_followup",
+        "value": "yes",
+        "confidence": "high"
+      },
+      "success": true,
+      "result": {
+        "ok": true,
+        "saved": "consent_to_followup",
+        "value": true
+      },
+      "duration_ms": 11.0,
+      "ts_ms": 51870.0
+    },
+    {
+      "name": "complete_form",
+      "arguments": {},
+      "success": true,
+      "result": {
+        "ok": true
+      },
+      "duration_ms": 9.0,
+      "ts_ms": 52020.0
+    }
+  ],
+  "usage": {
+    "voice_seconds": 55,
+    "llm_input_tokens": 12000,
+    "llm_output_tokens": 900
+  },
+  "interruptions": 1,
+  "events": [
+    {
+      "type": "barge_in",
+      "ts_ms": 42830.0
+    }
+  ],
+  "ratings": {
+    "naturalness": 5,
+    "clarity": 4,
+    "pronunciation": 5,
+    "accent_fit": 4,
+    "politeness": 5
+  },
+  "scenario": null
+}

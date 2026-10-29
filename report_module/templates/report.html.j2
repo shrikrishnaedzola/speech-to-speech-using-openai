@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>{{ r.file_name_base }}</title>
+<style>
+  /* Print layout for the PDF. Nirmala UI (Windows) and Noto Sans (Linux) cover Indian scripts. */
+  :root {
+    --ink: #0b0b0b; --muted: #52514e; --line: #e4e3df; --soft: #f4f3f0;
+    --good: #0ca30c; --warn: #b07a00; --bad: #d03b3b;
+    --mishearing: #fde2e2; --reask: #fdecd7; --tool: #dbe9fb; --interrupt: #ece6fb; --wronglang: #ecebe8;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: "Noto Sans", "Nirmala UI", "Noto Sans Devanagari", "Noto Sans Tamil", "Noto Sans Telugu",
+         "Noto Sans Kannada", "Noto Sans Bengali", "Segoe UI", Arial, sans-serif;
+         color: var(--ink); font-size: 10px; line-height: 1.45; margin: 0; background: #fff; }
+  .banner { background: #fab219; color: #3b2a00; font-weight: 700; text-align: center; padding: 5px; border-radius: 4px; }
+  .pii { background: #fde2e2; border: 1px solid var(--bad); color: #7a1414; padding: 6px 8px; border-radius: 4px; margin-top: 6px; }
+  h1 { font-size: 17px; margin: 10px 0 2px; }
+  h2 { font-size: 13px; margin: 18px 0 6px; padding-bottom: 3px; border-bottom: 1px solid var(--line); break-after: avoid; }
+  .sub { color: var(--muted); }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .tile { background: var(--soft); border-radius: 6px; padding: 6px 8px; }
+  .tile .k { color: var(--muted); font-size: 8.5px; }
+  .tile .v { font-size: 13px; font-weight: 700; }
+  .score { display: flex; align-items: center; gap: 14px; margin: 8px 0; }
+  .score .num { font-size: 34px; font-weight: 800; }
+  .verdict { font-weight: 700; padding: 3px 8px; border-radius: 10px; }
+  .v-Good { background: #dcf3dc; color: #0a5c0a; }
+  .v-Needs { background: #fdf0d2; color: #6b4a00; }
+  .v-Poor { background: #fbdcdc; color: #7a1414; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  ul { margin: 3px 0; padding-left: 16px; }
+  table { width: 100%; border-collapse: collapse; margin: 4px 0; }
+  th, td { text-align: left; padding: 3px 5px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 8.5px; }
+  tr { break-inside: avoid; }
+  .ok { color: var(--good); font-weight: 700; }
+  .no { color: var(--bad); font-weight: 700; }
+  .chart { display: block; width: 72%; margin: 6px auto; }
+  .bubble { padding: 4px 7px; border-radius: 6px; margin: 3px 0; max-width: 80%; break-inside: avoid; border: 1px solid var(--line); }
+  .agent { background: #fff; }
+  .caller { background: var(--soft); margin-left: auto; }
+  .row { display: flex; }
+  .meta { color: var(--muted); font-size: 8px; }
+  .t-mishearing { background: var(--mishearing); border-color: var(--bad); }
+  .t-reask { background: var(--reask); border-color: #ec835a; }
+  .t-interruption { background: var(--interrupt); border-color: #6250d6; }
+  .t-wrong_language { background: var(--wronglang); border-style: dashed; }
+  .tool { background: var(--tool); border: 1px solid #2a78d6; color: #184f95; font-size: 8.5px; padding: 2px 6px;
+          border-radius: 4px; margin: 2px auto; width: fit-content; break-inside: avoid; }
+  .tag { display: inline-block; font-size: 7.5px; padding: 0 4px; border-radius: 6px; background: #fff; border: 1px solid var(--line); margin-left: 3px; }
+  .legend span { margin-right: 10px; }
+  .sw { display: inline-block; width: 9px; height: 9px; border-radius: 2px; vertical-align: middle; margin-right: 3px; border: 1px solid var(--line); }
+  .sev { font-weight: 700; padding: 1px 6px; border-radius: 8px; font-size: 8.5px; }
+  .sev-High { background: #fbdcdc; color: #7a1414; }
+  .sev-Medium { background: #fdf0d2; color: #6b4a00; }
+  .sev-Low { background: var(--soft); color: var(--muted); }
+  .ai { border: 1px dashed var(--muted); padding: 8px; border-radius: 6px; }
+  .note { color: var(--muted); font-style: italic; }
+</style>
+</head>
+<body>
+<div class="banner">{{ r.banner }}</div>
+{% if r.pii.found %}
+<div class="pii">⚠ {{ r.pii.warnings | length }} number(s) that look like phone or Aadhaar numbers were found and masked. Use dummy data only.</div>
+{% endif %}
+
+<h1>Post-call report: {{ r.call.provider }} / {{ r.call.model }} / {{ r.call.language }}</h1>
+<div class="sub">Call {{ r.call.call_id }} · {{ r.call.started_at[:16].replace("T", " ") }} · {{ r.call.duration_s | duration }} · {{ r.call.form_name | na }}</div>
+
+<!-- 1. Summary -->
+<h2>{{ SECTION_TITLES.summary }}</h2>
+<div class="grid">
+  <div class="tile"><div class="k">Provider</div><div class="v">{{ r.call.provider }}</div></div>
+  <div class="tile"><div class="k">Model</div><div class="v">{{ r.call.model }}</div></div>
+  <div class="tile"><div class="k">Language · voice</div><div class="v">{{ r.call.language }} · {{ r.call.voice | na }}</div></div>
+  <div class="tile"><div class="k">Audio mode · form completed</div><div class="v">{{ "Phone 8 kHz" if r.call.audio_mode == "phone_8khz" else "Normal" }} · {{ r.call.form_completed | yes_no }}</div></div>
+</div>
+<div class="score">
+  <div class="num">{{ r.summary.score | na }}<span class="sub" style="font-size:12px">/100</span></div>
+  <span class="verdict v-{{ r.summary.verdict.split(' ')[0] }}">{{ r.summary.verdict }}</span>
+  {% if r.summary.verdict_note %}<span class="note">{{ r.summary.verdict_note }}</span>{% endif %}
+</div>
+<div class="two">
+  <div><b>Strengths</b><ul>{% for s in r.summary.strengths %}<li>{{ s }}</li>{% else %}<li>None stood out.</li>{% endfor %}</ul></div>
+  <div><b>Problems</b><ul>{% for p in r.summary.problems %}<li>{{ p }}</li>{% else %}<li>No problems found.</li>{% endfor %}</ul></div>
+</div>
+<img class="chart" src="{{ charts.parts }}" alt="Score per part">
+<div class="note">Not-rated parts are left out and their weight is shared by the others. Weights used:
+  {% for k, w in r.summary.effective_weights.items() %}{{ PART_LABELS[k] }} {{ w }}%{% if not loop.last %}, {% endif %}{% endfor %}.</div>
+
+<!-- 2. Transcript -->
+<h2>{{ SECTION_TITLES.transcript }}</h2>
+<div class="legend meta">
+  <span><i class="sw" style="background:var(--mishearing)"></i>Mishearing</span>
+  <span><i class="sw" style="background:var(--reask)"></i>Re-asked</span>
+  <span><i class="sw" style="background:var(--tool)"></i>Tool call</span>
+  <span><i class="sw" style="background:var(--interrupt)"></i>Interruption</span>
+  <span><i class="sw" style="background:var(--wronglang)"></i>Wrong language</span>
+</div>
+{% for i in r.transcript["items"] %}
+  {% if i.kind == "turn" %}
+  <div class="row"><div class="bubble {{ i.role }} {% for t in i.tags %}t-{{ t }} {% endfor %}">
+    <div class="meta">{{ i.time }} · {{ "Agent" if i.role == "agent" else "Caller" }}{% if i.detected_language %} · {{ i.detected_language }}{% endif %}
+      {% for t in i.tags %}<span class="tag">{{ TAG_LABELS[t] }}</span>{% endfor %}</div>
+    {{ i.text }}
+  </div></div>
+  {% else %}
+  <div class="tool">{{ i.time }} · {{ i.name }}({{ i.field_id or "" }}{% if i.value %} = "{{ i.value }}"{% endif %}) · {{ "ok" if i.success else "failed: " ~ (i.error or "") }}</div>
+  {% endif %}
+{% endfor %}
+
+<!-- 3. Mishearings -->
+<h2>{{ SECTION_TITLES.mishearings }}</h2>
+<div class="grid">
+  <div class="tile"><div class="k">Mishearings</div><div class="v">{{ r.mishearings.total }}</div></div>
+  <div class="tile"><div class="k">Fixed later in the call</div><div class="v">{{ r.mishearings.fixed }}</div></div>
+  <div class="tile"><div class="k">Number mix-ups</div><div class="v">{{ r.mishearings.number_issues }}</div></div>
+  <div class="tile"><div class="k">WER · CER</div><div class="v">{{ r.mishearings.wer | pct }} · {{ r.mishearings.cer | pct }}</div></div>
+</div>
+{% if r.mishearings.note %}<p class="note">{{ r.mishearings.note }}</p>{% endif %}
+{% if r.mishearings["items"] %}
+<table>
+  <tr><th>Time</th><th>What was said</th><th>What the AI heard</th><th>Field</th><th>Fixed?</th><th>Notes</th></tr>
+  {% for m in r.mishearings["items"] %}
+  <tr>
+    <td>{{ "%02d:%02d" % ((m.ts_ms or 0) // 60000, ((m.ts_ms or 0) // 1000) % 60) if m.ts_ms is not none else "--:--" }}</td>
+    <td>{{ m.said | na }}</td><td>{{ m.heard | na }}</td><td>{{ m.field_label | na }}</td>
+    <td class="{{ 'ok' if m.fixed else 'no' }}">{{ m.fixed | yes_no }}</td>
+    <td>{{ SOURCE_LABELS[m.source] }}{% if m.number_issue %}; {{ m.number_issue }}{% endif %}{% if m.caller_correction and m.source != "caller_correction" %}; caller: "{{ m.caller_correction }}"{% endif %}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+{% if r.mishearings.script %}
+<p class="meta">Expected script vs transcript (WER / CER per line):</p>
+<table>
+  <tr><th>Expected</th><th>Transcribed</th><th>WER</th><th>CER</th></tr>
+  {% for l in r.mishearings.script.lines if l.wer > 0 %}
+  <tr><td>{{ l.expected }}</td><td>{{ l.heard }}</td><td>{{ l.wer | pct }}</td><td>{{ l.cer | pct }}</td></tr>
+  {% else %}<tr><td colspan="4">All lines matched.</td></tr>{% endfor %}
+</table>
+{% endif %}
+
+<!-- 4. Voice quality -->
+<h2>{{ SECTION_TITLES.voice_quality }}</h2>
+{% set vq = r.voice_quality %}
+<div class="grid">
+  {% for key, label in [("naturalness","Naturalness"),("clarity","Clarity"),("pronunciation","Pronunciation"),("accent_fit","Accent fit"),("politeness","Politeness / tone")] %}
+  <div class="tile"><div class="k">{{ label }} (tester)</div><div class="v">{{ vq.ratings[key] | na }}{% if vq.ratings[key] %}/5{% endif %}</div></div>
+  {% endfor %}
+  <div class="tile"><div class="k">Average rating</div><div class="v">{{ vq.ratings_avg | na }}</div></div>
+  <div class="tile"><div class="k">MOS (automatic)</div><div class="v">{{ vq.mos.mos | na }}</div></div>
+</div>
+{% if vq.mos.reason %}<p class="note">MOS: {{ vq.mos.reason }}</p>{% endif %}
+<ul>
+  <li>Long silences (> 2 s): <b>{{ vq.issues.long_silences | length }}</b></li>
+  <li>Agent talking over the caller: <b>{{ vq.issues.talk_over_count }}</b></li>
+  <li>Cut-off sentences: <b>{{ vq.issues.cut_off_sentences | length }}</b>{% for c in vq.issues.cut_off_sentences %} ("…{{ c.text }}"){% endfor %}</li>
+  <li>Repeated phrases: <b>{{ vq.issues.repeated_phrases | length }}</b>{% for p in vq.issues.repeated_phrases %} ("{{ p.text }}" × {{ p.times }}){% endfor %}</li>
+</ul>
+{% if vq.tester_notes %}<p>Tester notes: {{ vq.tester_notes }}</p>{% endif %}
+
+<!-- 5. Latency -->
+<h2>{{ SECTION_TITLES.latency }}</h2>
+{% set lat = r.latency %}
+<div class="grid">
+  <div class="tile"><div class="k">Average · rating</div><div class="v">{{ lat.avg_ms | ms }} · {{ lat.rating | na }}</div></div>
+  <div class="tile"><div class="k">Median</div><div class="v">{{ lat.median_ms | ms }}</div></div>
+  <div class="tile"><div class="k">p90</div><div class="v">{{ lat.p90_ms | ms }}</div></div>
+  <div class="tile"><div class="k">Max</div><div class="v">{{ lat.max_ms | ms }}</div></div>
+</div>
+{% if charts.latency %}<img class="chart" src="{{ charts.latency }}" alt="Reply time per turn">{% endif %}
+{% if charts.stages %}<p class="meta">STT / LLM / TTS time per turn:</p><img class="chart" src="{{ charts.stages }}" alt="Stage time per turn">{% endif %}
+<b>Slowest turns</b>
+<ul>{% for s in lat.slowest %}<li>Turn {{ s.turn }}: {{ s.latency_ms | ms }} - {{ s.context }}</li>{% endfor %}</ul>
+
+<!-- 6. Language -->
+<h2>{{ SECTION_TITLES.language }}</h2>
+{% set lg = r.language %}
+<div class="grid">
+  <div class="tile"><div class="k">Selected</div><div class="v">{{ lg.selected }}</div></div>
+  <div class="tile"><div class="k">Detected (caller)</div><div class="v">{{ lg.detected_caller_languages | join(", ") or "n/a" }}</div></div>
+  <div class="tile"><div class="k">Agent in right language</div><div class="v">{{ lg.agent_correct_language_pct | pct }}</div></div>
+  <div class="tile"><div class="k">Code-mixing (tester)</div><div class="v">{{ lg.code_mixing_rating | na }}{% if lg.code_mixing_rating %}/5{% endif %}</div></div>
+</div>
+<p>Code-mixed caller turns: <b>{{ lg.code_mixed_caller_turns }}</b> · Language-specific mishearings: <b>{{ lg.language_mishearings }}</b></p>
+<p class="note">{{ lg.detection_note }}</p>
+
+<!-- 7. Accuracy -->
+<h2>{{ SECTION_TITLES.accuracy }}</h2>
+{% set a = r.accuracy %}
+<div class="grid">
+  <div class="tile"><div class="k">Field accuracy</div><div class="v">{{ a.field_accuracy | pct }}</div><div class="meta">{{ a.correct_fields }} of {{ a.filled_fields }} filled</div></div>
+  <div class="tile"><div class="k">Completion</div><div class="v">{{ a.completion | pct }}</div><div class="meta">{{ a.required_filled }} of {{ a.required_total }} required</div></div>
+  <div class="tile"><div class="k">Invalid answers fixed</div><div class="v">{{ a.invalid_answers_recovered }} / {{ a.invalid_answers }}</div></div>
+  <div class="tile"><div class="k">Tool success</div><div class="v">{{ a.tool_success_rate | pct }}</div><div class="meta">{{ a.tool_calls_total }} calls, {{ a.validation_errors | length }} validation errors</div></div>
+</div>
+<p>Follow-up errors: <b>{{ a.follow_up_errors }}</b> · Corrections saved: <b>{{ a.corrections_saved }}</b></p>
+<table>
+  <tr><th>Field</th><th>Expected</th><th>Saved</th><th>Correct?</th><th>Notes</th></tr>
+  {% for row in a.table %}
+  <tr><td>{{ row.label }}</td><td>{{ row.expected | na }}</td><td>{{ row.saved | na }}</td>
+    <td class="{{ {True: 'ok', False: 'no'}.get(row.correct, '') }}">{{ {True: "Yes", False: "No"}.get(row.correct, "-") }}</td><td>{{ row.notes }}</td></tr>
+  {% endfor %}
+</table>
+
+<!-- 8. Cost -->
+<h2>{{ SECTION_TITLES.cost }}</h2>
+{% set c = r.cost %}
+<div class="grid">
+  <div class="tile"><div class="k">This call</div><div class="v">{{ c.total_usd | usd }}</div><div class="meta">{{ c.total_inr | inr }} at ₹{{ c.inr_per_usd }}/USD</div></div>
+  <div class="tile"><div class="k">Per minute</div><div class="v">{{ c.cost_per_min_usd | usd }}</div></div>
+  <div class="tile"><div class="k">Per completed form</div><div class="v">{{ c.cost_per_completed_form_usd | usd }}</div></div>
+  <div class="tile"><div class="k">1,000 similar calls</div><div class="v">{{ c.projection_1000_calls_usd | usd }}</div><div class="meta">{{ c.projection_1000_calls_inr | inr }}</div></div>
+</div>
+<table>
+  <tr><th>Item</th><th>Usage</th><th>Rate (USD)</th><th>Cost</th></tr>
+  {% for b in c.breakdown %}
+  <tr><td>{{ b.label }}{% if not b.verified %} <span class="tag">unverified</span>{% endif %}</td><td>{{ b.usage | na }} {{ b.usage_key }}</td>
+    <td>{{ "%s per %s" % (b.rate_usd, b.unit) if b.rate_usd is not none else "not set" }}</td><td>{{ b.usd | usd }}</td></tr>
+  {% endfor %}
+</table>
+<p class="meta">Rates last updated: {{ c.rates_last_updated }}</p>
+{% for w in c.warnings %}<p class="note">⚠ {{ w }}</p>{% endfor %}
+
+<!-- 9. Issues -->
+<h2>{{ SECTION_TITLES.issues }}</h2>
+<table>
+  <tr><th>Severity</th><th>Problem</th><th>Suggestion</th></tr>
+  {% for i in r.issues %}
+  <tr><td><span class="sev sev-{{ i.severity }}">{{ i.severity }}</span></td><td>{{ i.title }}</td><td>{{ i.suggestion }}</td></tr>
+  {% else %}<tr><td colspan="3">No issues found.</td></tr>{% endfor %}
+</table>
+
+<!-- 10. AI summary -->
+<h2>{{ SECTION_TITLES.ai_summary }}</h2>
+{% if r.ai_summary and r.ai_summary.text %}
+<div class="ai">
+  <b>{{ r.ai_summary.label }}</b>{% if r.ai_summary.stale %} <span class="note">(written for an earlier version of this report)</span>{% endif %}
+  <p style="white-space: pre-line">{{ r.ai_summary.text }}</p>
+  {% if r.ai_summary.unverified_numbers %}<p class="no">⚠ Numbers not found in the metrics (check them): {{ r.ai_summary.unverified_numbers | join(", ") }}</p>{% endif %}
+</div>
+{% elif r.ai_summary and r.ai_summary.error %}
+<p class="note">AI summary failed: {{ r.ai_summary.error }}</p>
+{% else %}
+<p class="note">Not generated.</p>
+{% endif %}
+<p class="meta" style="margin-top:14px">Generated {{ r.generated_at }} · schema {{ r.schema_version }} · {{ r.file_name_base }}</p>
+</body>
+</html>

@@ -1,0 +1,170 @@
+> **{{ r.banner }}**
+
+# Post-call report: {{ r.call.provider }} / {{ r.call.model }} / {{ r.call.language }}
+
+Call {{ r.call.call_id }} · {{ r.call.started_at[:16].replace("T", " ") }} · {{ r.call.duration_s | duration }}
+{% if r.pii.found %}
+
+> ⚠️ **{{ r.pii.warnings | length }} number(s) that look like phone or Aadhaar numbers were found and masked.** Use dummy data only.
+{% endif %}
+
+## {{ SECTION_TITLES.summary }}
+
+| Provider | Model | Voice | Language | Audio mode | Form completed |
+|---|---|---|---|---|---|
+| {{ r.call.provider }} | {{ r.call.model }} | {{ r.call.voice | na }} | {{ r.call.language }} | {{ r.call.audio_mode }} | {{ r.call.form_completed | yes_no }} |
+
+**Overall score: {{ r.summary.score | na }} / 100 - {{ r.summary.verdict }}**
+{% if r.summary.verdict_note %}
+_{{ r.summary.verdict_note }}_
+{% endif %}
+
+| Part | Score | Weight used |
+|---|---|---|
+{% for key, value in r.summary.parts.items() %}
+| {{ PART_LABELS[key] }} | {{ "%.0f" % value if value is not none else "not rated" }} | {{ r.summary.effective_weights.get(key, 0) }}% |
+{% endfor %}
+
+**Strengths**
+{% for s in r.summary.strengths %}
+- {{ s }}
+{% else %}
+- None stood out.
+{% endfor %}
+
+**Problems**
+{% for p in r.summary.problems %}
+- {{ p }}
+{% else %}
+- No problems found.
+{% endfor %}
+
+## {{ SECTION_TITLES.transcript }}
+
+Legend: 🔴 mishearing · 🟠 re-asked · 🔵 tool call · 🟣 interruption · ⚪ wrong language
+
+{% for i in r.transcript["items"] %}
+{% if i.kind == "turn" %}
+{% set marks = {"mishearing": "🔴", "reask": "🟠", "interruption": "🟣", "wrong_language": "⚪"} %}
+- `{{ i.time }}` **{{ "Agent" if i.role == "agent" else "Caller" }}**{% if i.detected_language %} _({{ i.detected_language }})_{% endif %}{% for t in i.tags %} {{ marks.get(t, "") }}{% endfor %}: {{ i.text }}
+{% else %}
+- `{{ i.time }}` 🔵 _{{ i.name }}({{ i.field_id or "" }}{% if i.value %} = "{{ i.value }}"{% endif %}) - {{ "ok" if i.success else "failed: " ~ (i.error or "") }}_
+{% endif %}
+{% endfor %}
+
+## {{ SECTION_TITLES.mishearings }}
+
+Total: **{{ r.mishearings.total }}** · Fixed later: **{{ r.mishearings.fixed }}** · Number mix-ups: **{{ r.mishearings.number_issues }}** · WER: **{{ r.mishearings.wer | pct }}** · CER: **{{ r.mishearings.cer | pct }}**
+{% if r.mishearings.note %}
+
+_{{ r.mishearings.note }}_
+{% endif %}
+{% if r.mishearings["items"] %}
+
+| Time | What was said | What the AI heard | Field | Fixed? | Notes |
+|---|---|---|---|---|---|
+{% for m in r.mishearings["items"] %}
+| {{ "%02d:%02d" % ((m.ts_ms or 0) // 60000, ((m.ts_ms or 0) // 1000) % 60) if m.ts_ms is not none else "--:--" }} | {{ m.said | md }} | {{ m.heard | md }} | {{ m.field_label | md }} | {{ m.fixed | yes_no }} | {{ SOURCE_LABELS[m.source] }}{% if m.number_issue %}; {{ m.number_issue }}{% endif %}{% if m.caller_correction and m.source != "caller_correction" %}; caller: "{{ m.caller_correction | md }}"{% endif %} |
+{% endfor %}
+{% endif %}
+
+## {{ SECTION_TITLES.voice_quality }}
+
+| Naturalness | Clarity | Pronunciation | Accent fit | Politeness / tone | Average | MOS (auto) |
+|---|---|---|---|---|---|---|
+| {{ r.voice_quality.ratings.naturalness | na }} | {{ r.voice_quality.ratings.clarity | na }} | {{ r.voice_quality.ratings.pronunciation | na }} | {{ r.voice_quality.ratings.accent_fit | na }} | {{ r.voice_quality.ratings.politeness | na }} | {{ r.voice_quality.ratings_avg | na }} | {{ r.voice_quality.mos.mos | na }} |
+
+{% if r.voice_quality.mos.reason %}_MOS: {{ r.voice_quality.mos.reason }}_
+
+{% endif %}
+{% set vi = r.voice_quality.issues %}
+- Long silences (> 2 s): **{{ vi.long_silences | length }}**
+- Agent talking over the caller: **{{ vi.talk_over_count }}**
+- Cut-off sentences: **{{ vi.cut_off_sentences | length }}**
+- Repeated phrases: **{{ vi.repeated_phrases | length }}**{% for p in vi.repeated_phrases %} ("{{ p.text }}" × {{ p.times }}){% endfor %}
+
+{% if r.voice_quality.tester_notes %}
+Tester notes: {{ r.voice_quality.tester_notes }}
+{% endif %}
+
+## {{ SECTION_TITLES.latency }}
+
+Average **{{ r.latency.avg_ms | ms }}** ({{ r.latency.rating | na }}) · Median {{ r.latency.median_ms | ms }} · p90 {{ r.latency.p90_ms | ms }} · Max {{ r.latency.max_ms | ms }} · {{ r.latency.turns }} turns
+
+Rating: Good < {{ r.latency.thresholds.good }} ms · OK {{ r.latency.thresholds.good }}-{{ r.latency.thresholds.ok }} ms · Poor > {{ r.latency.thresholds.ok }} ms
+
+| Turn | Reply time | Rating{% if r.latency.has_stage_split %} | STT | LLM | TTS{% endif %} |
+|---|---|---|{% if r.latency.has_stage_split %}---|---|---|{% endif %}
+
+{% for t in r.latency.per_turn %}
+| {{ t.turn }} | {{ t.latency_ms | ms }} | {{ t.rating }}{% if r.latency.has_stage_split %} | {{ t.stt_ms | ms }} | {{ t.llm_ms | ms }} | {{ t.tts_ms | ms }}{% endif %} |
+{% endfor %}
+
+**Slowest turns**
+{% for s in r.latency.slowest %}
+- Turn {{ s.turn }}: {{ s.latency_ms | ms }} - {{ s.context }}
+{% endfor %}
+
+## {{ SECTION_TITLES.language }}
+
+- Selected: **{{ r.language.selected }}** · Detected from caller: **{{ r.language.detected_caller_languages | join(", ") or "n/a" }}**
+- Agent replied in the right language: **{{ r.language.agent_correct_language_pct | pct }}** of {{ r.language.agent_turns_judged }} judged turns
+- Code-mixed caller turns: **{{ r.language.code_mixed_caller_turns }}** · Code-mixing handling (tester): **{{ r.language.code_mixing_rating | na }}/5**
+- Language-specific mishearings: **{{ r.language.language_mishearings }}**
+
+_{{ r.language.detection_note }}_
+
+## {{ SECTION_TITLES.accuracy }}
+
+- Field accuracy: **{{ r.accuracy.field_accuracy | pct }}** ({{ r.accuracy.correct_fields }} correct of {{ r.accuracy.filled_fields }} filled)
+- Completion: **{{ r.accuracy.completion | pct }}** ({{ r.accuracy.required_filled }} of {{ r.accuracy.required_total }} required fields)
+- Follow-up errors: **{{ r.accuracy.follow_up_errors }}** · Invalid answers re-asked and fixed: **{{ r.accuracy.invalid_answers_recovered }} / {{ r.accuracy.invalid_answers }}** · Corrections saved: **{{ r.accuracy.corrections_saved }}**
+- Tool calls: **{{ r.accuracy.tool_calls_total }}**, success rate **{{ r.accuracy.tool_success_rate | pct }}**, validation errors **{{ r.accuracy.validation_errors | length }}**
+
+| Field | Expected | Saved | Correct? | Notes |
+|---|---|---|---|---|
+{% for row in r.accuracy.table %}
+| {{ row.label | md }} | {{ row.expected | md }} | {{ row.saved | md }} | {{ {True: "✅", False: "❌"}.get(row.correct, "-") }} | {{ row.notes | md if row.notes else "" }} |
+{% endfor %}
+
+## {{ SECTION_TITLES.cost }}
+
+**{{ r.cost.total_usd | usd }}** ({{ r.cost.total_inr | inr }} at ₹{{ r.cost.inr_per_usd }}/USD) · Per minute {{ r.cost.cost_per_min_usd | usd }} · Per completed form {{ r.cost.cost_per_completed_form_usd | usd }} · 1,000 similar calls ≈ {{ r.cost.projection_1000_calls_usd | usd }} ({{ r.cost.projection_1000_calls_inr | inr }})
+
+| Item | Usage | Rate (USD) | Cost |
+|---|---|---|---|
+{% for b in r.cost.breakdown %}
+| {{ b.label }}{% if not b.verified %} _(unverified)_{% endif %} | {{ b.usage | na }} {{ b.usage_key }} | {{ "%s per %s" % (b.rate_usd, b.unit) if b.rate_usd is not none else "not set" }} | {{ b.usd | usd }} |
+{% endfor %}
+
+Rates last updated: {{ r.cost.rates_last_updated }}
+{% for w in r.cost.warnings %}
+- ⚠️ {{ w }}
+{% endfor %}
+
+## {{ SECTION_TITLES.issues }}
+
+{% for i in r.issues %}
+- **{{ i.severity }}** - {{ i.title }} → {{ i.suggestion }}
+{% else %}
+- No issues found.
+{% endfor %}
+
+## {{ SECTION_TITLES.ai_summary }}
+
+{% if r.ai_summary and r.ai_summary.text %}
+> **{{ r.ai_summary.label }}**{% if r.ai_summary.stale %} _(written for an earlier version of this report)_{% endif %}
+
+{{ r.ai_summary.text }}
+{% if r.ai_summary.unverified_numbers %}
+
+⚠️ Numbers not found in the metrics (check them): {{ r.ai_summary.unverified_numbers | join(", ") }}
+{% endif %}
+{% elif r.ai_summary and r.ai_summary.error %}
+_AI summary failed: {{ r.ai_summary.error }}_
+{% else %}
+_Not generated._
+{% endif %}
+
+---
+_{{ r.banner }} · {{ r.footer }} · Generated {{ r.generated_at }} · schema {{ r.schema_version }}_

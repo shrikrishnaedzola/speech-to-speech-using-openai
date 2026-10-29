@@ -1,0 +1,586 @@
+{
+  "call": {
+    "call_id": "sample-sarvam-1",
+    "provider": "sarvam",
+    "model": "sarvam-cascade-test",
+    "voice": "test-voice-hi",
+    "language": "Hindi",
+    "audio_mode": "phone_8khz",
+    "started_at": "2026-10-27T11:02:00+05:30",
+    "duration_s": 68.2,
+    "form_name": "Program Feedback Survey (Test)",
+    "form_completed": false
+  },
+  "transcript": [
+    {
+      "role": "caller",
+      "text": "Namaste",
+      "ts_ms": 700.0
+    },
+    {
+      "role": "agent",
+      "text": "नमस्ते! मैं प्रोग्राम टीम से बोल रही हूँ। इसमें लगभग 3 मिनट लगेंगे। क्या अभी बात कर सकते हैं?",
+      "ts_ms": 2150.0
+    },
+    {
+      "role": "caller",
+      "text": "हाँ, बोलिए।",
+      "ts_ms": 9120.0
+    },
+    {
+      "role": "agent",
+      "text": "धन्यवाद। आपका नाम क्या है?",
+      "ts_ms": 10870.0
+    },
+    {
+      "role": "caller",
+      "text": "मेरा नाम टेस्ट व्यक्ति दो है।",
+      "ts_ms": 13220.0
+    },
+    {
+      "role": "agent",
+      "text": "आपकी उम्र कितनी है?",
+      "ts_ms": 16620.0
+    },
+    {
+      "role": "caller",
+      "text": "बयालीस साल।",
+      "ts_ms": 18640.0
+    },
+    {
+      "role": "agent",
+      "text": "आप किस ज़िले में रहते हैं?",
+      "ts_ms": 20590.0
+    },
+    {
+      "role": "caller",
+      "text": "Sample jila, haan vahi.",
+      "ts_ms": 23270.0
+    },
+    {
+      "role": "agent",
+      "text": "क्या आप प्रोग्राम के सेशन में आए थे?",
+      "ts_ms": 26070.0
+    },
+    {
+      "role": "caller",
+      "text": "नहीं, नहीं आ पाया।",
+      "ts_ms": 29410.0
+    },
+    {
+      "role": "agent",
+      "text": "आप क्यों नहीं आ पाए?",
+      "ts_ms": 32010.0
+    },
+    {
+      "role": "caller",
+      "text": "Kaam tha, time nahi mila.",
+      "ts_ms": 34360.0
+    },
+    {
+      "role": "agent",
+      "text": "आपके कितने बच्चे हैं?",
+      "ts_ms": 37460.0
+    },
+    {
+      "role": "caller",
+      "text": "Thirteen bachche hain.",
+      "ts_ms": 39480.0
+    },
+    {
+      "role": "agent",
+      "text": "ठीक है, तेरह बच्चे। उनकी उम्र बताइए?",
+      "ts_ms": 42130.0
+    },
+    {
+      "role": "caller",
+      "text": "Haan... chaar, saat aur das.",
+      "ts_ms": 45140.0
+    },
+    {
+      "role": "agent",
+      "text": "आपने तेरह बच्चे बताए थे, सभी की उम्र बताइए?",
+      "ts_ms": 48590.0
+    },
+    {
+      "role": "caller",
+      "text": "Bas teen hi hain.",
+      "ts_ms": 52260.0
+    },
+    {
+      "role": "agent",
+      "text": "1 से 5 में, आप प्रोग्राम से कितने संतुष्ट हैं?",
+      "ts_ms": 55560.0
+    },
+    {
+      "role": "caller",
+      "text": "चार।",
+      "ts_ms": 59560.0
+    },
+    {
+      "role": "agent",
+      "text": "क्या हम बाद में फिर से कॉल कर सकते हैं?",
+      "ts_ms": 61060.0
+    },
+    {
+      "role": "caller",
+      "text": "हाँ।",
+      "ts_ms": 65060.0
+    },
+    {
+      "role": "agent",
+      "text": "धन्यवाद, आपका दिन शुभ हो!",
+      "ts_ms": 66510.0
+    }
+  ],
+  "fields": [
+    {
+      "id": "caller_name",
+      "label": "Caller name",
+      "type": "text",
+      "required": true,
+      "condition": null,
+      "active": true,
+      "status": "filled",
+      "saved_value": "टेस्ट व्यक्ति दो",
+      "expected_value": "टेस्ट व्यक्ति दो",
+      "review_mark": "correct"
+    },
+    {
+      "id": "age",
+      "label": "Age",
+      "type": "number",
+      "required": true,
+      "condition": null,
+      "active": true,
+      "status": "filled",
+      "saved_value": 42,
+      "expected_value": 42,
+      "review_mark": "correct"
+    },
+    {
+      "id": "district",
+      "label": "District",
+      "type": "text",
+      "required": true,
+      "condition": null,
+      "active": true,
+      "status": "filled",
+      "saved_value": "Sample District",
+      "expected_value": "Sample District",
+      "review_mark": "correct"
+    },
+    {
+      "id": "preferred_language",
+      "label": "Preferred language",
+      "type": "choice",
+      "required": false,
+      "condition": null,
+      "active": true,
+      "status": "pending",
+      "saved_value": null,
+      "expected_value": null,
+      "review_mark": null
+    },
+    {
+      "id": "attended_sessions",
+      "label": "Attended sessions",
+      "type": "yes_no",
+      "required": true,
+      "condition": null,
+      "active": true,
+      "status": "filled",
+      "saved_value": false,
+      "expected_value": false,
+      "review_mark": "correct"
+    },
+    {
+      "id": "reason_not_attended",
+      "label": "Reason not attended",
+      "type": "text",
+      "required": true,
+      "condition": "attended_sessions = no",
+      "active": true,
+      "status": "filled",
+      "saved_value": "Kaam tha, time nahi mila",
+      "expected_value": "Kaam tha, time nahi mila",
+      "review_mark": "correct"
+    },
+    {
+      "id": "sessions_attended_count",
+      "label": "Sessions attended",
+      "type": "number",
+      "required": true,
+      "condition": "attended_sessions = yes",
+      "active": false,
+      "status": "pending",
+      "saved_value": null,
+      "expected_value": null,
+      "review_mark": null
+    },
+    {
+      "id": "number_of_children",
+      "label": "Number of children",
+      "type": "number",
+      "required": true,
+      "condition": null,
+      "active": true,
+      "status": "filled",
+      "saved_value": 13,
+      "expected_value": 3,
+      "review_mark": "wrong"
+    },
+    {
+      "id": "children_ages",
+      "label": "Children's ages",
+      "type": "list_number",
+      "required": true,
+      "condition": "number_of_children > 0",
+      "active": true,
+      "status": "pending",
+      "saved_value": null,
+      "expected_value": "4, 7, 10",
+      "review_mark": null
+    },
+    {
+      "id": "satisfaction_rating",
+      "label": "Satisfaction rating",
+      "type": "number",
+      "required": true,
+      "condition": null,
+      "active": true,
+      "status": "filled",
+      "saved_value": 4,
+      "expected_value": 4,
+      "review_mark": "correct"
+    },
+    {
+      "id": "improvement_suggestion",
+      "label": "Improvement suggestion",
+      "type": "text",
+      "required": false,
+      "condition": null,
+      "active": true,
+      "status": "skipped",
+      "saved_value": null,
+      "expected_value": null,
+      "review_mark": null
+    },
+    {
+      "id": "consent_to_followup",
+      "label": "Consent to follow-up",
+      "type": "yes_no",
+      "required": true,
+      "condition": null,
+      "active": true,
+      "status": "filled",
+      "saved_value": true,
+      "expected_value": true,
+      "review_mark": "correct"
+    }
+  ],
+  "turn_metrics": [
+    {
+      "turn": 1,
+      "latency_ms": 1100,
+      "ts_ms": 2150.0,
+      "stt_ms": 275,
+      "llm_ms": 495,
+      "tts_ms": 330
+    },
+    {
+      "turn": 2,
+      "latency_ms": 1050,
+      "ts_ms": 10870.0,
+      "stt_ms": 262,
+      "llm_ms": 472,
+      "tts_ms": 315
+    },
+    {
+      "turn": 3,
+      "latency_ms": 1300,
+      "ts_ms": 16620.0,
+      "stt_ms": 325,
+      "llm_ms": 585,
+      "tts_ms": 390
+    },
+    {
+      "turn": 4,
+      "latency_ms": 1250,
+      "ts_ms": 20590.0,
+      "stt_ms": 312,
+      "llm_ms": 562,
+      "tts_ms": 375
+    },
+    {
+      "turn": 5,
+      "latency_ms": 1400,
+      "ts_ms": 26070.0,
+      "stt_ms": 350,
+      "llm_ms": 630,
+      "tts_ms": 420
+    },
+    {
+      "turn": 6,
+      "latency_ms": 1200,
+      "ts_ms": 32010.0,
+      "stt_ms": 300,
+      "llm_ms": 540,
+      "tts_ms": 360
+    },
+    {
+      "turn": 7,
+      "latency_ms": 1350,
+      "ts_ms": 37460.0,
+      "stt_ms": 338,
+      "llm_ms": 608,
+      "tts_ms": 405
+    },
+    {
+      "turn": 8,
+      "latency_ms": 1600,
+      "ts_ms": 42130.0,
+      "stt_ms": 400,
+      "llm_ms": 720,
+      "tts_ms": 480
+    },
+    {
+      "turn": 9,
+      "latency_ms": 1700,
+      "ts_ms": 48590.0,
+      "stt_ms": 425,
+      "llm_ms": 765,
+      "tts_ms": 510
+    },
+    {
+      "turn": 10,
+      "latency_ms": 1900,
+      "ts_ms": 55560.0,
+      "stt_ms": 475,
+      "llm_ms": 855,
+      "tts_ms": 570
+    },
+    {
+      "turn": 11,
+      "latency_ms": 1150,
+      "ts_ms": 61060.0,
+      "stt_ms": 288,
+      "llm_ms": 518,
+      "tts_ms": 345
+    },
+    {
+      "turn": 12,
+      "latency_ms": 1100,
+      "ts_ms": 66510.0,
+      "stt_ms": 275,
+      "llm_ms": 495,
+      "tts_ms": 330
+    }
+  ],
+  "tool_calls": [
+    {
+      "name": "save_answer",
+      "arguments": {
+        "field_id": "caller_name",
+        "value": "टेस्ट व्यक्ति दो",
+        "confidence": "high"
+      },
+      "success": true,
+      "result": {
+        "ok": true,
+        "saved": "caller_name",
+        "value": "टेस्ट व्यक्ति दो"
+      },
+      "duration_ms": 11.0,
+      "ts_ms": 15470.0
+    },
+    {
+      "name": "save_answer",
+      "arguments": {
+        "field_id": "age",
+        "value": "42",
+        "confidence": "high"
+      },
+      "success": true,
+      "result": {
+        "ok": true,
+        "saved": "age",
+        "value": 42
+      },
+      "duration_ms": 11.0,
+      "ts_ms": 19490.0
+    },
+    {
+      "name": "save_answer",
+      "arguments": {
+        "field_id": "district",
+        "value": "Sample District",
+        "confidence": "high"
+      },
+      "success": true,
+      "result": {
+        "ok": true,
+        "saved": "district",
+        "value": "Sample District"
+      },
+      "duration_ms": 11.0,
+      "ts_ms": 24820.0
+    },
+    {
+      "name": "save_answer",
+      "arguments": {
+        "field_id": "attended_sessions",
+        "value": "no",
+        "confidence": "high"
+      },
+      "success": true,
+      "result": {
+        "ok": true,
+        "saved": "attended_sessions",
+        "value": false
+      },
+      "duration_ms": 11.0,
+      "ts_ms": 30960.0
+    },
+    {
+      "name": "save_answer",
+      "arguments": {
+        "field_id": "reason_not_attended",
+        "value": "Kaam tha, time nahi mila",
+        "confidence": "high"
+      },
+      "success": true,
+      "result": {
+        "ok": true,
+        "saved": "reason_not_attended",
+        "value": "Kaam tha, time nahi mila"
+      },
+      "duration_ms": 11.0,
+      "ts_ms": 36260.0
+    },
+    {
+      "name": "save_answer",
+      "arguments": {
+        "field_id": "number_of_children",
+        "value": "13",
+        "confidence": "high"
+      },
+      "success": true,
+      "result": {
+        "ok": true,
+        "saved": "number_of_children",
+        "value": 13
+      },
+      "duration_ms": 11.0,
+      "ts_ms": 40680.0
+    },
+    {
+      "name": "save_answer",
+      "arguments": {
+        "field_id": "children_ages",
+        "value": "4, 7, 10",
+        "confidence": "high"
+      },
+      "success": false,
+      "result": {
+        "ok": false,
+        "error": "Got 3 values but number_of_children is 13. Please confirm with the caller."
+      },
+      "duration_ms": 11.0,
+      "ts_ms": 47040.0
+    },
+    {
+      "name": "save_answer",
+      "arguments": {
+        "field_id": "satisfaction_rating",
+        "value": "4",
+        "confidence": "high"
+      },
+      "success": true,
+      "result": {
+        "ok": true,
+        "saved": "satisfaction_rating",
+        "value": 4
+      },
+      "duration_ms": 11.0,
+      "ts_ms": 60060.0
+    },
+    {
+      "name": "save_answer",
+      "arguments": {
+        "field_id": "consent_to_followup",
+        "value": "yes",
+        "confidence": "high"
+      },
+      "success": true,
+      "result": {
+        "ok": true,
+        "saved": "consent_to_followup",
+        "value": true
+      },
+      "duration_ms": 11.0,
+      "ts_ms": 65560.0
+    },
+    {
+      "name": "complete_form",
+      "arguments": {},
+      "success": false,
+      "result": {
+        "ok": false,
+        "error": "Some required fields are missing.",
+        "missing_fields": [
+          {
+            "field_id": "children_ages"
+          }
+        ]
+      },
+      "duration_ms": 9.0,
+      "ts_ms": 65710.0
+    }
+  ],
+  "usage": {
+    "stt_seconds": 27,
+    "llm_input_tokens": 18000,
+    "llm_output_tokens": 1400,
+    "tts_characters": 1650
+  },
+  "interruptions": 0,
+  "events": [],
+  "ratings": {
+    "naturalness": 4,
+    "clarity": 3,
+    "pronunciation": 4,
+    "accent_fit": 5,
+    "politeness": 5,
+    "code_mixing": 4
+  },
+  "scenario": {
+    "id": "feedback-hi-1",
+    "name": "Hindi with Hinglish and a 'teen' number",
+    "caller_script": [
+      "Namaste",
+      "हाँ, बोलिए।",
+      "मेरा नाम टेस्ट व्यक्ति दो है।",
+      "बयालीस साल।",
+      "Sample zila, haan wahi.",
+      "नहीं, नहीं आ पाया।",
+      "Kaam tha, time nahi mila.",
+      "Teen bachche hain.",
+      "Haan chaar, saat aur das.",
+      "Bas teen hi hain.",
+      "चार।",
+      "हाँ।"
+    ],
+    "expected_answers": {
+      "caller_name": "टेस्ट व्यक्ति दो",
+      "age": 42,
+      "district": "Sample District",
+      "attended_sessions": false,
+      "reason_not_attended": "Kaam tha, time nahi mila",
+      "number_of_children": 3,
+      "satisfaction_rating": 4,
+      "consent_to_followup": true,
+      "children_ages": "4, 7, 10"
+    }
+  }
+}

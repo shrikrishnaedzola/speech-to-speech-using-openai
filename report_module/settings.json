@@ -1,0 +1,69 @@
+{
+  "_comment": "Edit this file to change score weights, cost rates and options. Copy it and pass the path to load_settings() for per-tester overrides.",
+  "score_weights": {
+    "accuracy": 35,
+    "mishearings": 15,
+    "latency": 20,
+    "voice_quality": 15,
+    "language": 10,
+    "cost": 5
+  },
+  "latency_thresholds_ms": { "good": 1000, "ok": 1500, "zero_score": 3000 },
+  "long_silence_ms": 2000,
+  "currency": {
+    "inr_per_usd": 88.0,
+    "_comment": "Placeholder exchange rate - update before sharing reports."
+  },
+  "cost": {
+    "rates_last_updated": "2026-10-28",
+    "target_cost_per_min_usd": 0.05,
+    "_comment": "Each item: usage key from CallData.usage, unit size, USD per unit. usd=null means 'rate not set' and is skipped with a warning. Only OpenAI GPT-Live voice price was checked against official docs.",
+    "providers": {
+      "openai": {
+        "gpt-live-1": [
+          { "label": "Voice minutes (GPT-Live)", "usage_key": "voice_seconds", "unit": 60, "usd": 0.05, "verified": true },
+          { "label": "Delegated LLM input tokens", "usage_key": "llm_input_tokens", "unit": 1000000, "usd": null, "verified": false },
+          { "label": "Delegated LLM output tokens", "usage_key": "llm_output_tokens", "unit": 1000000, "usd": null, "verified": false }
+        ],
+        "gpt-realtime-2.1": [
+          { "label": "Audio input tokens", "usage_key": "audio_in_tokens", "unit": 1000000, "usd": null, "verified": false },
+          { "label": "Audio output tokens", "usage_key": "audio_out_tokens", "unit": 1000000, "usd": null, "verified": false },
+          { "label": "Per-minute fallback (tester setting)", "usage_key": "voice_seconds", "unit": 60, "usd": 0.10, "verified": false }
+        ]
+      },
+      "sarvam": {
+        "default": [
+          { "label": "Speech-to-text", "usage_key": "stt_seconds", "unit": 3600, "usd": null, "verified": false },
+          { "label": "LLM input tokens", "usage_key": "llm_input_tokens", "unit": 1000000, "usd": null, "verified": false },
+          { "label": "LLM output tokens", "usage_key": "llm_output_tokens", "unit": 1000000, "usd": null, "verified": false },
+          { "label": "Text-to-speech characters", "usage_key": "tts_characters", "unit": 10000, "usd": null, "verified": false }
+        ]
+      },
+      "gemini": {
+        "default": [
+          { "label": "Audio input tokens", "usage_key": "audio_in_tokens", "unit": 1000000, "usd": null, "verified": false },
+          { "label": "Audio output tokens", "usage_key": "audio_out_tokens", "unit": 1000000, "usd": null, "verified": false },
+          { "label": "Text input tokens", "usage_key": "llm_input_tokens", "unit": 1000000, "usd": null, "verified": false }
+        ]
+      },
+      "elevenlabs": {
+        "default": [
+          { "label": "Agent minutes", "usage_key": "voice_seconds", "unit": 60, "usd": null, "verified": false },
+          { "label": "Realtime model input tokens", "usage_key": "llm_input_tokens", "unit": 1000000, "usd": null, "verified": false },
+          { "label": "Realtime model output tokens", "usage_key": "llm_output_tokens", "unit": 1000000, "usd": null, "verified": false }
+        ]
+      }
+    }
+  },
+  "mos": {
+    "enabled": false,
+    "_comment": "UTMOS22 strong via torch.hub tarepan/SpeechMOS (MIT code; weights licence not stated - internal evaluation only). Needs: pip install -e \".[mos]\""
+  },
+  "ai_summary": {
+    "auto_on_generate": false,
+    "_comment_auto": "false = only when someone clicks 'Generate AI summary' (or POST /report?ai_summary=true). true = on every report.",
+    "provider": "openai",
+    "model": "gpt-5.6-terra",
+    "_comment": "Key read from OPENAI_API_KEY in .env. Model can be overridden with SUMMARY_MODEL."
+  }
+}

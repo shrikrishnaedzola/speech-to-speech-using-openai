@@ -1,0 +1,110 @@
+{
+  "id": "program_feedback_survey",
+  "name": "Program Feedback Survey (Test)",
+  "description": "Short feedback call about an NGO program. Dummy data only.",
+  "fields": [
+    {
+      "id": "caller_name",
+      "label": "Caller name",
+      "type": "text",
+      "required": true,
+      "question": "May I know your name, please?"
+    },
+    {
+      "id": "age",
+      "label": "Age",
+      "type": "number",
+      "integer": true,
+      "required": true,
+      "min": 18,
+      "max": 100,
+      "question": "How old are you?"
+    },
+    {
+      "id": "district",
+      "label": "District",
+      "type": "text",
+      "required": true,
+      "question": "Which district do you live in?"
+    },
+    {
+      "id": "preferred_language",
+      "label": "Preferred language",
+      "type": "choice",
+      "required": false,
+      "choices": ["Hindi", "English", "Tamil", "Telugu", "Marathi", "Other"],
+      "question": "Which language do you prefer: Hindi, English, Tamil, Telugu, Marathi, or another language?"
+    },
+    {
+      "id": "attended_sessions",
+      "label": "Attended sessions",
+      "type": "yes_no",
+      "required": true,
+      "question": "Did you attend any of the program sessions?"
+    },
+    {
+      "id": "reason_not_attended",
+      "label": "Reason not attended",
+      "type": "text",
+      "required": true,
+      "condition": { "field": "attended_sessions", "op": "eq", "value": false },
+      "question": "May I ask why you could not attend?"
+    },
+    {
+      "id": "sessions_attended_count",
+      "label": "Sessions attended",
+      "type": "number",
+      "integer": true,
+      "required": true,
+      "min": 1,
+      "max": 100,
+      "condition": { "field": "attended_sessions", "op": "eq", "value": true },
+      "question": "How many sessions did you attend?"
+    },
+    {
+      "id": "number_of_children",
+      "label": "Number of children",
+      "type": "number",
+      "integer": true,
+      "required": true,
+      "min": 0,
+      "max": 20,
+      "question": "How many children do you have?"
+    },
+    {
+      "id": "children_ages",
+      "label": "Children's ages",
+      "type": "list_number",
+      "required": true,
+      "min": 0,
+      "max": 60,
+      "count_field": "number_of_children",
+      "condition": { "field": "number_of_children", "op": "gt", "value": 0 },
+      "question": "What are the ages of your children?"
+    },
+    {
+      "id": "satisfaction_rating",
+      "label": "Satisfaction rating",
+      "type": "number",
+      "integer": true,
+      "required": true,
+      "min": 1,
+      "max": 5,
+      "question": "On a scale of 1 to 5, how satisfied are you with the program?"
+    },
+    {
+      "id": "improvement_suggestion",
+      "label": "Improvement suggestion",
+      "type": "text",
+      "required": false,
+      "question": "Do you have any suggestion to improve the program?"
+    },
+    {
+      "id": "consent_to_followup",
+      "label": "Consent to follow-up",
+      "type": "yes_no",
+      "required": true,
+      "question": "May we call you again later for a follow-up?"
+    }
+  ]
+}
