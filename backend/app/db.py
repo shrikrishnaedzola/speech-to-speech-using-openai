@@ -7,6 +7,10 @@ from .config import BACKEND_DIR, settings
 
 
 def _resolve_url(url: str) -> str:
+    # "mysql://..." would make SQLAlchemy look for the MySQLdb driver, which we
+    # don't install. Use PyMySQL (pure Python, in requirements.txt) instead.
+    if url.startswith("mysql://"):
+        url = "mysql+pymysql://" + url[len("mysql://"):]
     # Make "sqlite:///./data/app.db" relative to backend/, not the shell's cwd.
     prefix = "sqlite:///./"
     if url.startswith(prefix):
