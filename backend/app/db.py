@@ -20,7 +20,52 @@ def _resolve_url(url: str) -> str:
     return url
 
 
-def _engine_options(url: str) -> dict:
+SSL_MODE_KEYS = ("ssl-mode", "ssl_mode", "sslmode")
+
+
+def _pop_ssl_mode(url: str) -> tuple[str, str | None]:
+    """Remove "?ssl-mode=REQUIRED" (as given by hosted MySQL providers) from the URL.
+
+    PyMySQL does not understand ssl-mode, so we read it here and set TLS ourselves.
+    """
+    from sqlalchemy.engine import make_url
+
+    parsed = make_url(url)
+    query = dict(parsed.query)
+    mode = None
+    for key in SSL_MODE_KEYS:
+        if key in query:
+            mode = str(query.pop(key)).upper()
+    if mode is None:
+        return url, None
+    return parsed.set(query=query).render_as_string(hide_password=False), mode
+
+
+def _ssl_connect_args(ssl_mode: str | None) -> dict:
+    """TLS settings for PyMySQL.
+
+    ssl-mode REQUIRED/PREFERRED (common for Aiven, DigitalOcean...): encrypt, but do
+    not check the certificate - these providers sign it with their own CA.
+    VERIFY_CA/VERIFY_IDENTITY, or DATABASE_SSL=true without ssl-mode: encrypt and
+    verify against the public CA list (certifi).
+    """
+    import ssl
+
+    if ssl_mode == "DISABLED":
+        return {}
+    if ssl_mode in ("REQUIRED", "PREFERRED"):
+        context = ssl.create_default_context()
+        context.check_hostname = False
+        context.verify_mode = ssl.CERT_NONE
+        return {"ssl": context}
+    if ssl_mode in ("VERIFY_CA", "VERIFY_IDENTITY") or settings.database_ssl:
+        import certifi  # installed with httpx
+
+        return {"ssl": {"ca": certifi.where()}}
+    return {}
+
+
+def _engine_options(url: str, ssl_mode: str | None = None) -> dict:
     if url.startswith("sqlite"):
         return {
             "connect_args": {"check_same_thread": False},  # needed for SQLite + FastAPI
@@ -30,10 +75,8 @@ def _engine_options(url: str) -> dict:
     # MySQL (deployed). pre_ping + recycle: serverless instances sit idle, and
     # MySQL closes idle connections, so check/refresh them before use.
     options = {"pool_pre_ping": True, "pool_recycle": 280, "pool_size": 2, "max_overflow": 3}
-    if settings.database_ssl:
-        import certifi  # installed with httpx
-
-        options["connect_args"] = {"ssl": {"ca": certifi.where()}}
+    if connect_args := _ssl_connect_args(ssl_mode):
+        options["connect_args"] = connect_args
     return options
 
 
@@ -42,7 +85,8 @@ if settings.on_vercel and settings.database_url.startswith("sqlite"):
     raise RuntimeError("Set DATABASE_URL to your MySQL database in the Vercel project settings.")
 
 _url = _resolve_url(settings.database_url)
-engine = create_engine(_url, **_engine_options(_url))
+_url, _ssl_mode = _pop_ssl_mode(_url) if _url.startswith("mysql") else (_url, None)
+engine = create_engine(_url, **_engine_options(_url, _ssl_mode))
 SessionLocal = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
 
 
